@@ -12,8 +12,7 @@ frase:		.string     "determinada frase aqui consta" # 12 vogais (dtrmnd frs q cn
 print_1:    .string     "A contagem de aeiou é igual a: "
 print_2:    .string     "\n"
 print_3:    .string     "A nova frase é: "
-frase_nova: .string     ""
-arroba:     .string     "@"
+frase_nova: .string     "a"
 vogais_m:   .string     "aeiou"
     .text
 main:
@@ -24,8 +23,9 @@ main:
     addi s0, zero, 0 # contagem de vogais
     la a0, frase
     la a1, vogais_m
+    la a4, frase_nova
 
-    # jal conta_vogais
+    jal conta_vogais
     jal elimina_vogais
     j fim
 
@@ -69,61 +69,46 @@ conta_vogais:
         ret
 
 elimina_vogais:
-    lb a2, 0(a0) # carrega a0 em a2 - frase
-    lb a3, 0(a1) # carrega a1 em a3 - vogal
-    la s0, arroba
-    lb s1, 0(s0)
-    teste_condicao_r:
-        beq  t3, t2, fim_r  # =
-    corpo_laco_r:
-        beq a2, a3, troca_vogal # =
-        j incremento_controle_r
-    troca_vogal:
-        sb s0, 0(a0)
-    incremento_controle_r:
-        addi a0, a0, 1 # frase
-        addi t3, t3, 1 # indice inicial da string
-        j elimina_vogais
-    fim_r:
-        addi a1, a1, 1 # vogal 
-        addi t1, t1, 1 # indice inicial das vogais
-        beq t1, t0, print_r # =
-        la a0, frase
-        addi t3, zero, 1 # indice inicial da string
-        j elimina_vogais
-    print_r:
-        addi t1, zero, 0 # indice inicial das vogais
-        addi t3, zero, 0 # indice inicial da string
-        la a0, frase
-        la a4, frase_nova
-        teste_condicao_rr:
-            lb a2, 0(a0) # carrega a0 em a2 - frase
-            lb a3, 0(a4) # carrega a1 em a4 - frase nova
-            beq  t3, t2, fim_rr  # =
-        corpo_laco_rr:
-            bne s0, a2, salva # =
-            j incremento_controle_rr
-        salva:
-            sb a2, 0(a4)
-            addi a4, a4, 1 # indice inicial da string
-        incremento_controle_rr:
-            addi a0, a0, 1 # frase
-            addi t3, t3, 1 # indice inicial da string
-            j teste_condicao_rr
+    teste_condicao_vog:
+        beq t3, t2, fim_vog
+    corpo_laco_vog: # testei de diversas formas e não consegui certo com 3 loops, então esse conceito de if é melhor
+        lb a2, 0(a0) # carrega a0 em a2 - frase
+        lb a3, 0(a1) # carrega a1 em a3 - vogal - a
+        beq a2, a3, incremento_controle_vog
+        addi a1, a1, 1
+        lb a3, 0(a1) # carrega a1 em a3 - vogal - e
+        beq a2, a3, incremento_controle_vog
+        addi a1, a1, 1
+        lb a3, 0(a1) # carrega a1 em a3 - vogal - i
+        beq a2, a3, incremento_controle_vog
+        addi a1, a1, 1
+        lb a3, 0(a1) # carrega a1 em a3 - vogal - o
+        beq a2, a3, incremento_controle_vog
+        addi a1, a1, 1
+        lb a3, 0(a1) # carrega a1 em a3 - vogal - u
+        beq a2, a3, incremento_controle_vog
+        j salva
+    salva:
+        sb a2, 0(a4)
+        addi a4, a4, 1
+    incremento_controle_vog:
+        la a1, vogais_m
+        addi t3, t3, 1
+        addi a0, a0, 1
+        j teste_condicao_vog
+    fim_vog:
+        la a0, print_3 # "A nova frase é: "
+        li a7, 4    # printa string
+        ecall
 
-        fim_rr:
-            la a0, print_3 # "A nova frase é: "
-            li a7, 4    # printa string
-            ecall
+        la a0, frase_nova # "dtrmnd frs q cnst"
+        li a7, 4    # printa string
+        ecall
 
-            la a0, frase_nova # "A nova frase é: "
-            li a7, 4    # printa string
-            ecall
+        la a0, print_2
+        li a7, 4
+        ecall
 
-            la a0, print_2
-            li a7, 4
-            ecall
-            ret
-
+        ret
 fim:
     nop
