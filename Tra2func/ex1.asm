@@ -12,7 +12,7 @@ frase:		.string     "determinada frase aqui consta" # 12 vogais (dtrmnd frs q cn
 print_1:    .string     "A contagem de aeiou é igual a: "
 print_2:    .string     "\n"
 print_3:    .string     "A nova frase é: "
-frase_nova: .string     "a"
+frase_nova: .string     ""
 vogais_m:   .string     "aeiou"
     .text
 main:
@@ -23,7 +23,6 @@ main:
     addi s0, zero, 0 # contagem de vogais
     la a0, frase
     la a1, vogais_m
-    la a4, frase_nova
 
     jal conta_vogais
     jal elimina_vogais
@@ -63,16 +62,19 @@ conta_vogais:
         li a7, 4
         ecall
 
-        addi s0, zero, 0 # contagem de vogais vai ser reutilizada como flag
         addi t1, zero, 0 # indice inicial das vogais
         addi t3, zero, 0 # indice inicial da string
         ret
 
 elimina_vogais:
+    la a0, frase
+    la a4, frase_nova
     teste_condicao_vog:
         beq t3, t2, fim_vog
     corpo_laco_vog: # testei de diversas formas e não consegui certo com 3 loops, então esse conceito de if é melhor
+        la a1, vogais_m
         lb a2, 0(a0) # carrega a0 em a2 - frase
+
         lb a3, 0(a1) # carrega a1 em a3 - vogal - a
         beq a2, a3, incremento_controle_vog
         addi a1, a1, 1
@@ -92,7 +94,6 @@ elimina_vogais:
         sb a2, 0(a4)
         addi a4, a4, 1
     incremento_controle_vog:
-        la a1, vogais_m
         addi t3, t3, 1
         addi a0, a0, 1
         j teste_condicao_vog
