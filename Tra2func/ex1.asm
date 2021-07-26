@@ -12,8 +12,8 @@ frase:		.string     "determinada frase aqui consta" # 12 vogais (dtrmnd frs q cn
 print_1:    .string     "A contagem de aeiou é igual a: "
 print_2:    .string     "\n"
 print_3:    .string     "A nova frase é: "
-frase_nova: .string     ""
 vogais_m:   .string     "aeiou"
+frase_nova: .string     ""
     .text
 main:
     addi t0, zero, 5 # indice vogais
@@ -73,23 +73,23 @@ elimina_vogais:
         beq t3, t2, fim_vog
     corpo_laco_vog: # testei de diversas formas e não consegui certo com 3 loops, então esse conceito de if é melhor
         la a1, vogais_m
-        lb a2, 0(a0) # carrega a0 em a2 - frase
+        lb a2, (a0) # carrega a0 em a2 - frase
 
-        lb a3, 0(a1) # carrega a1 em a3 - vogal - a
+        lb a3, (a1) # carrega a1 em a3 - vogal - a
         beq a2, a3, incremento_controle_vog
         addi a1, a1, 1
-        lb a3, 0(a1) # carrega a1 em a3 - vogal - e
+        lb a3, (a1) # carrega a1 em a3 - vogal - e
         beq a2, a3, incremento_controle_vog
         addi a1, a1, 1
-        lb a3, 0(a1) # carrega a1 em a3 - vogal - i
+        lb a3, (a1) # carrega a1 em a3 - vogal - i
         beq a2, a3, incremento_controle_vog
         addi a1, a1, 1
-        lb a3, 0(a1) # carrega a1 em a3 - vogal - o
+        lb a3, (a1) # carrega a1 em a3 - vogal - o
         beq a2, a3, incremento_controle_vog
         addi a1, a1, 1
-        lb a3, 0(a1) # carrega a1 em a3 - vogal - u
+        lb a3, (a1) # carrega a1 em a3 - vogal - u
         beq a2, a3, incremento_controle_vog
-        j salva
+        # j salva
     salva:
         sb a2, 0(a4)
         addi a4, a4, 1
