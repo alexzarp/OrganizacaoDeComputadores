@@ -1,18 +1,19 @@
     .data
 matriz:     .word     0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0
-matriz_tiro: .string     ""
-navio:      .string     "ABCDEFGHIJK"
 navios1:     .string     "3\n0 3 1 1\n0 3 3 0\n1 1 7 3\n1 4 3 5" # disposicao, comprimento, linha inicial, coluna inicial
 navios2:     .string     ""
 navios3:     .string     ""
+matriz_tiro: .string     ""
+navio:      .string     "ABCDEFGHIJK"
 msg_1:      .string     "Escolha o conjunto de posicionamento dos navios (1, 2 ou 3): "
 invalida_fora:      .string     "Posição inválida por estar fora da matriz"
-invalida_sobreposto  .string    "Posição inválida por estar sobreescrevendo navio existente"
-invalida_n          .string     "Pos"
+invalida_sobreposto:  .string    "Posição inválida por estar sobreescrevendo navio existente"
+invalida_n:          .string     "Posição inválida pois o navio é maior que a matriz"
 br_n:       .string     "\n"
     .text
 main:
     jal insere_embarcacoes
+    #jal printa_matriz
     j fim
 insere_embarcacoes:
     la a0, msg_1
@@ -35,15 +36,15 @@ insere_embarcacoes:
     carrega1:
         la a1, navios1
         j continua_ins
-    carrega2
+    carrega2:
         la a1, navios2
         j continua_ins
     carrega3:
         la a1, navios3
         # j continua_ins # 
 
-    continua_ins:
     addi s11, zero, 1 # contagem barco
+    continua_ins:
     add t1, zero, zero # para navios diposicao horizontal
     addi t2, zero, 1 # para navios disposição vertical
     la a2, matriz # a2 navios
@@ -93,11 +94,11 @@ insere_embarcacoes:
             beq a5, t2, vertical_ins
             horizontal_ins:
                 addi a2, a2, 4
-                j continua_ins
+                j continua_ins_h
             vertical_ins:
                 addi a2, a2, 40 # mesmo que 4 * 10 posições
-            continua_ins:
-                j teste_condicao_ins_h
+            continua_ins_h:
+                j corpo_laco_ins
         fim_ins_h:
             addi s11, s11, 1
             j incremento_controle_ins
@@ -116,8 +117,8 @@ insere_embarcacoes:
 #     teste_condicao_val:
 #         beq 
 
-printa_matriz:
-
+# printa_matriz:
+#     la 
 quebra: # só pra dar quebra de linha de forma mais limpa = \n
     la a0, br_n
     li a7, 4
