@@ -13,8 +13,8 @@ br_n:       .string     "\n"
 space:      .string     " "
     .text
 main:
-    jal insere_embarcacoes
-    #jal printa_matriz
+    # jal insere_embarcacoes
+    jal printa_matriz
     j fim
 insere_embarcacoes:
     la a0, msg_1
@@ -103,9 +103,9 @@ insere_embarcacoes:
                 j corpo_laco_ins_h
         fim_ins_h:
             addi s11, s11, 1
-            j teste_condicao_ins_h
+            j teste_condicao_ins
 
-    teste_condicao_ins_h:
+    incremento_controle_ins:
         addi t0, t0, -1
         addi a1, a1, 2
         la a2, matriz
@@ -175,31 +175,34 @@ printa_matriz:
     add t0, zero, zero # quando chegar em 100, termina
     addi t1, zero, 100 
     add t2, zero, zero # a cada 10, um \n
+    addi t3, zero, 10
     la a1, matriz
-
     teste_condicao_prin:
         beq t0, t1, fim_prin
-        lw a2, (a1)
-        
-    
+        beq t2, t3, pula_prin
+        j corpo_laco_prin
+
+    pula_prin:
+        add t2, zero, zero
+        la a0, br_n
+        li a7, 4
+        ecall
     corpo_laco_prin:
-        
-        la a0, a2
+        lw a0, (a1)
         li a7, 1
         ecall
 
         la a0, space
         li a7, 4
         ecall
-        j incremento_prin
-    incremento_prin:
-        addi t2, t2, 1
-        j corpo_laco_prin
+        # j incremento_prin, não precisa chamar pois vai continuar no fluxo do programa- acho
     incremento_controle_prin:
         addi a1, a1, 4
         addi t0, t0, 1
+        addi t2, t2, 1
         j teste_condicao_prin
     fim_prin:
+        ret
 
 
 quebra: # só pra dar quebra de linha de forma mais limpa = \n
