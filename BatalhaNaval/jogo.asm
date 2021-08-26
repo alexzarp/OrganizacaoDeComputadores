@@ -52,27 +52,46 @@ insere_embarcacoes:
     la a2, matriz # a2 navios
     lw a3, (a2) # matriz onde vai os navios
     lb a4, (a1) # string com a descricao dos navios
+
+    add s10, zero, ra
+    jal altera
+    add ra, zero, s10
     add t0, a4, zero # contagem de navios
+
     addi a1, a1, 2
     teste_condicao_ins:
         beq t0, zero, fim_ins
     corpo_laco_ins:
         lb a4, (a1) # string com a descricao dos navios
-        add a5, a4, zero 
+        add s10, zero, ra
+        jal altera
+        add ra, zero, s10
+        add a5, a4, zero # disposicao do navio
 
         addi a1, a1, 2
         lb a4, (a1) # string com a descricao dos navios
+        add s10, zero, ra
+        jal altera
+        add ra, zero, s10
         addi t3, a4, 0 # comprimento do navio
+
         addi a1, a1, 2
         lb a4, (a1) # string com a descricao dos navios
+        add s10, zero, ra
+        jal altera
+        add ra, zero, s10
         addi t4, a4, 0 # linha do navio
+
         addi a1, a1, 2
         lb a4, (a1)
+        add s10, zero, ra
+        jal altera
+        add ra, zero, s10
         addi t5, a4, 0 # coluna do navio | t0 = contagem de navios, t3 = comprimento do navio, t4 = linha, t5 = coluna
         # Deslocamento = (L * QTD_colunas + C) * 4
+
         addi t6, zero, 9
         addi s3, zero, 4
-        # addi s4, zero, 0
         mul s0, t4, t6 # multiplicação da linha por 9(número de colunas da matriz)
         add s1, s0, t5 # soma de s0 com a coluna
         mul s0, s1, s3 # resultado final do deslocamento 
@@ -119,27 +138,26 @@ insere_embarcacoes:
 #     teste_condicao_val:
 #         beq 
 altera: # função cedida pelo Jeferson da dupla Jeferson Krumenauer e Vinícius Todescato
-    addi t1,zero,48
-    beq a4,t1,troca48
-    addi t1,zero,49
-    beq a4,t1,troca49
-    addi t1,zero,50
-    beq a4,t1,troca50
-    addi t1,zero,51
-    beq a4,t1,troca51
-    addi t1,zero,52
-    beq a4,t1,troca52
-    addi t1,zero,53
-    beq a4,t1,troca53
-    addi t1,zero,54
-    beq a4,t1,troca54
-    addi t1,zero,55
-    beq a4,t1,troca55
-    addi t1,zero,56
-    beq a4,t1,troca56
-    addi t1,zero,57
-    beq a4,t1,troca57
-    
+    addi a6,zero,48
+    beq a4,a6,troca48
+    addi a6,zero,49
+    beq a4,a6,troca49
+    addi a6,zero,50
+    beq a4,a6,troca50
+    addi a6,zero,51
+    beq a4,a6,troca51
+    addi a6,zero,52
+    beq a4,a6,troca52
+    addi a6,zero,53
+    beq a4,a6,troca53
+    addi a6,zero,54
+    beq a4,a6,troca54
+    addi a6,zero,55
+    beq a4,a6,troca55
+    addi a6,zero,56
+    beq a4,a6,troca56
+    addi a6,zero,57
+    beq a4,a6,troca57
     troca48:
         addi a4,zero,0
         ret
@@ -181,7 +199,6 @@ printa_matriz:
         beq t0, t1, fim_prin
         beq t2, t3, pula_prin
         j corpo_laco_prin
-
     pula_prin:
         add t2, zero, zero
         la a0, br_n
