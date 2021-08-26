@@ -1,6 +1,6 @@
     .data
 matriz:     .word     0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0
-navios1:     .string     "3\n0 3 1 1\n0 3 3 0\n1 1 7 3\n1 4 3 5" # disposicao, comprimento, linha inicial, coluna inicial
+navios1:     .string     "4\n0 3 1 1\n0 3 3 0\n1 1 7 3\n1 4 3 5" # disposicao, comprimento, linha inicial, coluna inicial
 navios2:     .string     ""
 navios3:     .string     ""
 matriz_tiro: .string     ""
@@ -13,7 +13,7 @@ br_n:       .string     "\n"
 space:      .string     " "
     .text
 main:
-    # jal insere_embarcacoes
+    jal insere_embarcacoes
     jal printa_matriz
     j fim
 insere_embarcacoes:
@@ -119,10 +119,10 @@ insere_embarcacoes:
             vertical_ins:
                 addi a2, a2, 40 # mesmo que 4 * 10 posições
             continua_ins_h:
-                j corpo_laco_ins_h
+                j teste_condicao_ins_h
         fim_ins_h:
             addi s11, s11, 1
-            j teste_condicao_ins
+            # j teste_condicao_ins
 
     incremento_controle_ins:
         addi t0, t0, -1
