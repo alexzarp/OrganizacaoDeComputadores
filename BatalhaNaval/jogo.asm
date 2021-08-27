@@ -1,14 +1,14 @@
     .data
 matriz:     .word     0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0
-navios1:     .string     "4\n0 4 1 1\n0 4 3 0\n1 2 7 3\n1 5 3 5" # disposicao, comprimento, linha inicial, coluna inicial
-navios2:     .string     ""
-navios3:     .string     ""
+navios1:     .string     "4\n0 4 1 1 \n0 4 3 0 \n1 2 7 3 \n1 5 3 5 " # disposicao, comprimento, linha inicial, coluna inicial
+navios2:     .string     "2\n0 5 2 1 \n1 4 2 4 " # posicao invalida de teste
+navios3:     .string     "" # comprimento invalido de teste
 matriz_tiro: .string     ""
 navio:      .string     "ABCDEFGHIJK"
 msg_1:      .string     "Escolha o conjunto de posicionamento dos navios (1, 2 ou 3): "
 invalida_fora:      .string     "Posição inválida por estar fora da matriz"
 invalida_sobreposto:  .string    "Posição inválida por estar sobreescrevendo navio existente"
-invalida_n:          .string     "Posição inválida pois o navio é maior que a matriz"
+invalida_maior:          .string     "Posição inválida pois o navio é maior que a matriz"
 br_n:       .string     "\n"
 space:      .string     " "
     .text
@@ -60,6 +60,7 @@ insere_embarcacoes:
     add t0, a4, zero # contagem de navios
 
     addi a1, a1, 2
+    addi s9, zero, 32 # espaco na tabela ascii
     teste_condicao_ins:
         beq t0, zero, fim_ins
     corpo_laco_ins:
@@ -76,12 +77,17 @@ insere_embarcacoes:
         add ra, zero, s10
         addi t3, a4, 0 # comprimento do navio
 
+
         addi a1, a1, 2
         lb a4, (a1) # string com a descricao dos navios
         add s10, zero, ra
         jal altera
         add ra, zero, s10
         addi t4, a4, 0 # linha do navio
+        addi a1, a1, 1
+        lb a4, (a1)
+        bne a4, s9, pos_invalida # erro de pos invalida
+        addi a1, a1, -1
 
         addi a1, a1, 2
         lb a4, (a1)
@@ -89,27 +95,24 @@ insere_embarcacoes:
         jal altera
         add ra, zero, s10
         addi t5, a4, 0 # coluna do navio | t0 = contagem de navios, t3 = comprimento do navio, t4 = linha, t5 = coluna
-        # Deslocamento = (L * QTD_colunas + C) * 4
+        addi a1, a1, 1
+        lb a4, (a1)
+        bne a4, s9, pos_invalida # erro de pos invalida
 
+        # Deslocamento = (L * QTD_colunas + C) * 4
         addi t6, zero, 10
         addi s3, zero, 4
         mul s0, t4, t6 # multiplicação da linha por 9(número de colunas da matriz)
         add s1, s0, t5 # soma de s0 com a coluna
         mul s0, s1, s3 # resultado final do deslocamento 
 
-
         add a2, a2, s0
-        lw a3, (a2)
-
-        # add s10, zero, ra
-        # jal verifica_validade
-        # add ra, zero, s10
         
-        # sw s11, (a2)
-        # addi t3, t3, -1
         teste_condicao_ins_h:
             beq t3, zero, fim_ins_h
         corpo_laco_ins_h:
+            lw a3, (a2)
+            bne a3, zero, sobre_invalido
             sw s11, (a2)
         incremento_controle_ins_h:
             addi t3, t3, -1
@@ -132,6 +135,34 @@ insere_embarcacoes:
         la a2, matriz
         j teste_condicao_ins
     fim_ins:
+        ret
+    pos_invalida:
+        la a0, invalida_fora
+        li a7, 4
+        ecall
+
+        la a0, br_n
+        li a7, 4
+        ecall
+        ret
+    comp_invalido:
+        la a0, invalida_maior
+        li a7, 4
+        ecall
+
+        la a0, br_n
+        li a7, 4
+        ecall
+        ret
+
+    sobre_invalido:
+        la a0, invalida_sobreposto
+        li a7, 4
+        ecall
+
+        la a0, br_n
+        li a7, 4
+        ecall
         ret
 
 # verifica_validade:
