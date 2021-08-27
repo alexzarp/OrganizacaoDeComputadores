@@ -1,6 +1,6 @@
     .data
 matriz:     .word     0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0
-navios1:     .string     "4\n0 3 1 1\n0 3 3 0\n1 1 7 3\n1 4 3 5" # disposicao, comprimento, linha inicial, coluna inicial
+navios1:     .string     "4\n0 4 1 1\n0 4 3 0\n1 2 7 3\n1 5 3 5" # disposicao, comprimento, linha inicial, coluna inicial
 navios2:     .string     ""
 navios3:     .string     ""
 matriz_tiro: .string     ""
@@ -23,17 +23,14 @@ insere_embarcacoes:
 
     li a7, 5 # a0 é o int
     ecall
-
-    add s10, zero, ra
-    jal quebra
-    add ra, zero, s10
-
+    
     addi t0, zero, 1
     beq a0, t0, carrega1
     addi t0, zero, 2
     beq a0, t0, carrega2
     addi t0, zero, 3
     beq a0, t0, carrega3
+
     carrega1:
         la a1, navios1
         j continua_ins
@@ -43,9 +40,13 @@ insere_embarcacoes:
     carrega3:
         la a1, navios3
         # j continua_ins # 
+    
+    add s10, zero, ra
+    jal quebra
+    add ra, zero, s10
 
-    addi s11, zero, 1 # contagem barco
     continua_ins:
+    addi s11, zero, 1 # contagem barco
     add t1, zero, zero # para navios diposicao horizontal
     addi t2, zero, 1 # para navios disposição vertical
 
@@ -67,7 +68,7 @@ insere_embarcacoes:
         jal altera
         add ra, zero, s10
         add a5, a4, zero # disposicao do navio
-
+        
         addi a1, a1, 2
         lb a4, (a1) # string com a descricao dos navios
         add s10, zero, ra
@@ -90,12 +91,13 @@ insere_embarcacoes:
         addi t5, a4, 0 # coluna do navio | t0 = contagem de navios, t3 = comprimento do navio, t4 = linha, t5 = coluna
         # Deslocamento = (L * QTD_colunas + C) * 4
 
-        addi t6, zero, 9
+        addi t6, zero, 10
         addi s3, zero, 4
         mul s0, t4, t6 # multiplicação da linha por 9(número de colunas da matriz)
         add s1, s0, t5 # soma de s0 com a coluna
         mul s0, s1, s3 # resultado final do deslocamento 
-        
+
+
         add a2, a2, s0
         lw a3, (a2)
 
@@ -103,8 +105,8 @@ insere_embarcacoes:
         # jal verifica_validade
         # add ra, zero, s10
         
-        sw s11, (a2)
-        addi t3, t3, -1
+        # sw s11, (a2)
+        # addi t3, t3, -1
         teste_condicao_ins_h:
             beq t3, zero, fim_ins_h
         corpo_laco_ins_h:
@@ -212,7 +214,7 @@ printa_matriz:
         la a0, space
         li a7, 4
         ecall
-        # j incremento_prin, não precisa chamar pois vai continuar no fluxo do programa- acho
+
     incremento_controle_prin:
         addi a1, a1, 4
         addi t0, t0, 1
