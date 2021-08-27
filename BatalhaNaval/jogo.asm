@@ -41,9 +41,9 @@ insere_embarcacoes:
         la a1, navios3
         # j continua_ins # 
     
-    add s10, zero, ra
-    jal quebra
-    add ra, zero, s10
+    la a0, br_n
+    li a7, 4
+    ecall
 
     continua_ins:
     addi s11, zero, 1 # contagem barco
@@ -135,10 +135,89 @@ insere_embarcacoes:
         ret
 
 # verifica_validade:
-#     add s9, s0, zero # deslocamento
-#     add s8, t3, zero
+#     # a1 já contem a string correta
+#     lb a4, (a1)
+#     add s10, zero, ra
+#     jal altera
+#     add ra, zero, s10
+#     add t0, zero, a4 # t0 contagem de barcos
+#     addi a1, a1, 2
+#     # disposicao, comprimento, linha inicial, coluna inicial
 #     teste_condicao_val:
-#         beq 
+#         beq t0, zero, fim_val
+#     corpo_laco_val:
+#         lb a4, (a1)
+#         add s10, zero, ra
+#         jal altera
+#         add ra, zero, s10
+#         add t1, zero, a4 # t1 diposição
+
+#         addi a1, a1, 2
+#         lb a4, (a1)
+#         add s10, zero, ra
+#         jal altera
+#         add ra, zero, s10
+#         add t2, zero, a4 # t2 comprimento
+
+#         addi a1, a1, 2
+#         lb a4, (a1)
+#         addi a1, a1, 1
+#         lb a5, (a1)
+#         addi a6, zero, 32 # codigo do espaco
+#         bne a5, a6, pos_invalida # se não é um espaço, é um número maior que 9, é inválido
+#         add s10, zero, ra
+#         jal altera
+#         add ra, zero, s10
+#         add t3, zero, a4 # linha
+
+#         addi a1, a1, 1
+#         lb a4, (a1)
+#         addi a1, a1, 1
+#         lb a5, (a1)
+#         addi a6, zero, 32 # codigo do espaco
+#         beq a5, a6, pos_invalida
+#         add s10, zero, ra
+#         jal altera
+#         add ra, zero, s10
+#         add t3, zero, a4 # linha
+
+#         addi a1, a1
+#     incremento_controle_val:
+#         addi t0, t0, -1
+#         j teste_condicao_val
+#     fim_val:
+#         ret
+#     pos_invalida:
+#         la a0, invalida_fora
+#         li a7, 4
+#         ecall
+
+#         la a0, br_n
+#         li a7, 4
+#         ecall
+#         add ra, zero, s10 # em vez de voltar para a função, mando a função(insere_embarcações) retornar, entendeu?
+#         ret
+#     comp_invalido:
+#         la a0, invalida_maior
+#         li a7, 4
+#         ecall
+
+#         la a0, br_n
+#         li a7, 4
+#         ecall
+#         add ra, zero, s10 # em vez de voltar para a função, mando a função(insere_embarcações) retornar, entendeu?
+#         ret
+
+#     sobre_invalido:
+#         la a0, invalida_sobreposto
+#         li a7, 4
+#         ecall
+
+#         la a0, br_n
+#         li a7, 4
+#         ecall
+#         add ra, zero, s10 # em vez de voltar para a função, mando a função(insere_embarcações) retornar, entendeu?
+#         ret
 altera: # função cedida pelo Jeferson da dupla Jeferson Krumenauer e Vinícius Todescato
     addi a6,zero,48
     beq a4,a6,troca48
@@ -223,12 +302,20 @@ printa_matriz:
     fim_prin:
         ret
 
-
-quebra: # só pra dar quebra de linha de forma mais limpa = \n
-    la a0, br_n
-    li a7, 4
-    ecall
-    ret
+zera_matriz:
+    add s2, zero, zero # quando chegar em 100, termina
+    addi s3, zero, 100 
+    la s1, matriz
+    teste_condicao_zen:
+        beq s2, s3, fim_zen
+    corpo_laco_zen:
+        sw zero, (s1)
+    incremento_controle_zen:
+        addi s1, s1, 4
+        addi s2, s2, 1
+        j teste_condicao_zen
+    fim_zen:
+        ret
 
 fim:
     nop
