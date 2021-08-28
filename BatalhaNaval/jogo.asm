@@ -2,7 +2,7 @@
 matriz:     .word     0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0
 navios1:     .string     "4\n0 4 1 1 \n0 4 3 0 \n1 2 7 3 \n1 5 3 5 " # disposicao, comprimento, linha inicial, coluna inicial
 navios2:     .string     "2\n0 5 2 1 \n1 4 2 4 " # posicao invalida de teste
-navios3:     .string     "" # comprimento invalido de teste
+navios3:     .string     "1\n0 7 0 4 " # comprimento invalido de teste
 matriz_tiro: .string     ""
 navio:      .string     "ABCDEFGHIJK"
 msg_1:      .string     "Escolha o conjunto de posicionamento dos navios (1, 2 ou 3): "
@@ -118,10 +118,20 @@ insere_embarcacoes:
             addi t3, t3, -1
             beq a5, t1, horizontal_ins
             beq a5, t2, vertical_ins
+            # se for horizontal = coluna inicial + comprimento do navio >9 invalido
+            # se for vertical = linha inical + comprimento do navio >9 invalido
             horizontal_ins:
+                add s8, t5, t3
+                addi s7, zero, 9
+                blt s7, s8, comp_invalido
+
                 addi a2, a2, 4
                 j continua_ins_h
             vertical_ins:
+                add s8, t4, t3
+                addi s7, zero, 9
+                blt s7, s8, comp_invalido
+
                 addi a2, a2, 40 # mesmo que 4 * 10 posições
             continua_ins_h:
                 j teste_condicao_ins_h
@@ -149,7 +159,7 @@ insere_embarcacoes:
         jal zera_matriz
         add ra, zero, s10
         ret
-    comp_invalido: # so falta esse
+    comp_invalido:
         la a0, invalida_maior
         li a7, 4
         ecall
