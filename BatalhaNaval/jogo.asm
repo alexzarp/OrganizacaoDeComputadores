@@ -47,16 +47,17 @@ insere_embarcacoes:
 
     continua_ins:
     addi s11, zero, 1 # contagem barco
-    add t1, zero, zero # para navios diposicao horizontal
-    addi t2, zero, 1 # para navios disposição vertical
+    # add t1, zero, zero # para navios diposicao horizontal
+    # addi t2, zero, 1 # para navios disposição vertical
 
     la a2, matriz # a2 navios
     lw a3, (a2) # matriz onde vai os navios
     lb a4, (a1) # string com a descricao dos navios
 
-    add s10, zero, ra
-    jal altera
-    add ra, zero, s10
+    # add s10, zero, ra
+    # jal altera
+    # add ra, zero, s10
+    addi a4, a4, -48
     add t0, a4, zero # contagem de navios
 
     addi a1, a1, 2
@@ -65,35 +66,38 @@ insere_embarcacoes:
         beq t0, zero, fim_ins
     corpo_laco_ins:
         lb a4, (a1) # string com a descricao dos navios
-        add s10, zero, ra
-        jal altera
-        add ra, zero, s10
+        # add s10, zero, ra
+        # jal altera
+        # add ra, zero, s10
+        addi a4, a4, -48
         add a5, a4, zero # disposicao do navio
         
         addi a1, a1, 2
         lb a4, (a1) # string com a descricao dos navios
-        add s10, zero, ra
-        jal altera
-        add ra, zero, s10
+        # add s10, zero, ra
+        # jal altera
+        # add ra, zero, s10
+        addi a4, a4, -48
         addi t3, a4, 0 # comprimento do navio
 
 
         addi a1, a1, 2
         lb a4, (a1) # string com a descricao dos navios
-        add s10, zero, ra
-        jal altera
-        add ra, zero, s10
+        # add s10, zero, ra
+        # jal altera
+        # add ra, zero, s10
+        addi a4, a4, -48
         addi t4, a4, 0 # linha do navio
         addi a1, a1, 1
         lb a4, (a1)
         bne a4, s9, pos_invalida # erro de pos invalida
-        addi a1, a1, -1
 
-        addi a1, a1, 2
+        addi a1, a1, 1
         lb a4, (a1)
-        add s10, zero, ra
-        jal altera
-        add ra, zero, s10
+        # add s10, zero, ra
+        # jal altera
+        # add ra, zero, s10
+        addi a4, a4, -48
         addi t5, a4, 0 # coluna do navio | t0 = contagem de navios, t3 = comprimento do navio, t4 = linha, t5 = coluna
         addi a1, a1, 1
         lb a4, (a1)
@@ -116,8 +120,8 @@ insere_embarcacoes:
             sw s11, (a2)
         incremento_controle_ins_h:
             addi t3, t3, -1
-            beq a5, t1, horizontal_ins
-            beq a5, t2, vertical_ins
+            beq a5, zero, horizontal_ins # beq a5, t2, vertical_ins
+            j vertical_ins
             # se for horizontal = coluna inicial + comprimento do navio >9 invalido
             # se for vertical = linha inical + comprimento do navio >9 invalido
             horizontal_ins:
