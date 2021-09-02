@@ -1,12 +1,19 @@
     .data
 matriz:     .word     0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0
 recorde:    .word     0,0,0
-voce:       .word     0,0,0,0
+voce:       .word     0,0,0,0,0
+situacaojogo_msg:   .string     "A suasitução de jogo atual se encotra da forma:\n"
+recorde_msg: .string     "Recorde\n"
+voce_msg:   .string     "Você\n"
+tiros_msg:    .string    "\tTiros: "
+acertos_msg:  .string    "\tAcertos: "
+afundados_msg:  .string     "\tAfundados: "
+ultimotiro_msg:    .string     "\tÚltimo Tiro: "
 navios1:     .string     "4\n0 4 1 1 \n0 4 3 0 \n1 2 7 3 \n1 5 3 5 " # disposicao, comprimento, linha inicial, coluna inicial
 navios2:     .string     "2\n0 5 2 1 \n1 4 2 4 " # posicao invalida de teste
 navios3:     .string     "1\n0 7 0 4 " # comprimento invalido de teste
 # matriz_tiro: .string     ""
-navio:      .string     "ABCDEFGHIO¤"
+# navio:      .string     "ABCDEFGHIO¤"
 msg_1:      .string     "Escolha o conjunto de posicionamento dos navios (1, 2 ou 3): "
 invalida_fora:      .string     "Posição inválida por estar fora da matriz"
 invalida_sobreposto:  .string    "Posição inválida por estar sobreescrevendo navio existente"
@@ -196,8 +203,8 @@ printa_matriz:
         j corpo_laco_prin
     pula_prin:
         add t2, zero, zero
-        la a0, br_n
-        li a7, 4
+        li a0, 32 # código ascii do espaço
+        li a7, 11 # printa char
         ecall
     corpo_laco_prin:
         lb a0, (a1)
@@ -213,10 +220,9 @@ printa_matriz:
         printa_atingido:
             li a7, 11
             ecall
-
         continua_prin:
-        la a0, space
-        li a7, 4
+        la a0, 10 # código ascii do \n
+        li a7, 11 # printa char
         ecall
 
     incremento_controle_prin:
@@ -272,18 +278,158 @@ jogo:
 
         mostra_mat:
             add s10, zero, ra
+            jal printa_situacao
             jal printa_matriz
+            li a0, 10
+            li a7, 11
+            ecall
             add ra, zero, s10
             j incremento_controle_jogo
 
         jogada:
-
+            add s10, zero, ra
+            jal jogar
+            add ra, zero, s10
 
     incremento_controle_jogo:
+        j teste_condicao_jogo
     fim_jogo:
         ret
 
 printa_situacao:
-    
+    la a0, situacaojogo_msg
+    li a7, 4
+    ecall
+
+    la a0, recorde_msg
+    li a7, 4
+    ecall
+
+    la a0, tiros_msg
+    li a7, 4
+    ecall
+    la a1, recorde
+    lw a0, (a1)
+    li a7, 1
+    ecall
+    li a0, 10
+    li a7, 11
+    ecall
+
+    addi a1, a1, 4
+    la a0, acertos_msg
+    li a7, 4
+    ecall
+    lw a0, (a1)
+    li a7, 1
+    ecall
+    li a0, 10
+    li a7, 11
+    ecall
+
+    addi a1, a1, 4
+    la a0, afundados_msg
+    li a7, 4
+    ecall
+    lw a0, (a1)
+    li a7, 1
+    ecall
+    li a0, 10
+    li a7, 11
+    ecall
+    # ----------------------------------
+    la a0, voce_msg
+    li a7, 4
+    ecall
+
+    la a0, tiros_msg
+    li a7, 4
+    ecall
+    la a1, voce
+    lw a0, (a1)
+    li a7, 1
+    ecall
+    li a0, 10
+    li a7, 11
+    ecall
+
+    addi a1, a1, 4
+    la a0, acertos_msg
+    li a7, 4
+    ecall
+    lw a0, (a1)
+    li a7, 1
+    ecall
+    li a0, 10
+    li a7, 11
+    ecall
+
+    addi a1, a1, 4
+    la a0, afundados_msg
+    li a7, 4
+    ecall
+    lw a0, (a1)
+    li a7, 1
+    ecall
+    li a0, 10
+    li a7, 11
+    ecall
+
+    addi a1, a1, 4
+    la a0, ultimotiro_msg
+    li a7, 4
+    ecall
+    lw a0, (a1)
+    li a7, 1
+    ecall
+    li a0, 32
+    li a7, 11
+    ecall
+    addi a1, a1, 4
+    lw a0, (a1)
+    li a7, 1
+    ecall
+    li a0, 10
+    li a7, 11
+    ecall
+
+    ret
+jogar:
+    la a0, tiro
+    li a7, 4
+    ecall
+    li a1, 3
+    li a7, 8 # vamos ler uma string
+    ecall # a0 é a string
+    add a1, a0, zero
+    li a0, 10
+    li a7, 11
+    ecall # pula a linha
+
+    addi t2, zero, 10
+    addi t3, zero, 4
+    lb a2, (a1) # linha
+    addi a2, a2, -48 # a2 linha
+    addi a1, a1, 2 # pulamos para a coluna
+    lb a3, (a1) # coluna
+    addi a3, a3, -48 # a3 coluna
+
+    # Deslocamento = (L * QTD_colunas + C) * 4
+    mul a2, a2, t2
+    add a2, a2, a3
+    mul s0, a2, t3 # resultado de deslocamento em s0
+    add s9, zero, s10 # salva o deslocamento para na próxima limpar a posição do tiro
+
+    la a1, matriz
+    add a1, zero, s0
+    lw a2, (a1)
+    bne a2, zero, barco_atingido
+    addi a2, zero, 48 # representa o "o" após a soma com 64 feita na hora da função de print
+    sw a2, (a1)
+    ret
+    barco_atingido:
+        addi a2, a2, 33
+        ret
+
 fim:
     nop
