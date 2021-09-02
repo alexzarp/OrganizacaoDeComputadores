@@ -1,14 +1,19 @@
     .data
 matriz:     .word     0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0
+recorde:    .word     0,0,0
+voce:       .word     0,0,0,0
 navios1:     .string     "4\n0 4 1 1 \n0 4 3 0 \n1 2 7 3 \n1 5 3 5 " # disposicao, comprimento, linha inicial, coluna inicial
 navios2:     .string     "2\n0 5 2 1 \n1 4 2 4 " # posicao invalida de teste
 navios3:     .string     "1\n0 7 0 4 " # comprimento invalido de teste
-matriz_tiro: .string     ""
-navio:      .string     "ABCDEFGHIJK"
+# matriz_tiro: .string     ""
+navio:      .string     "ABCDEFGHIO¤"
 msg_1:      .string     "Escolha o conjunto de posicionamento dos navios (1, 2 ou 3): "
 invalida_fora:      .string     "Posição inválida por estar fora da matriz"
 invalida_sobreposto:  .string    "Posição inválida por estar sobreescrevendo navio existente"
 invalida_maior:       .string     "Posição inválida pois o navio é maior que a matriz"
+msg_2:      .string     "Bem vindo à batalha naval!\n"
+menu_jogo:       .string     "O que deseja fazer agora?\n0 - Reiniciar o game\n1 - Mostrar o estado da matriz, recorde e sua situação no jogo\n2 - Fazer uma jogada\n$ "
+tiro:       .string     "Insira as posições de tiro (linha coluna): "
 br_n:       .string     "\n"
 space:      .string     " "
     .text
@@ -147,7 +152,8 @@ insere_embarcacoes:
         add s10, zero, ra
         jal zera_matriz
         add ra, zero, s10
-        ret
+        j fim
+        # ret
     comp_invalido:
         la a0, invalida_maior
         li a7, 4
@@ -160,7 +166,8 @@ insere_embarcacoes:
         add s10, zero, ra
         jal zera_matriz
         add ra, zero, s10
-        ret
+        j fim
+        # ret
 
     sobre_invalido:
         la a0, invalida_sobreposto
@@ -174,7 +181,8 @@ insere_embarcacoes:
         add s10, zero, ra
         jal zera_matriz
         add ra, zero, s10
-        ret
+        j fim
+        # ret
 
 printa_matriz:
     add t0, zero, zero # quando chegar em 100, termina
@@ -192,10 +200,21 @@ printa_matriz:
         li a7, 4
         ecall
     corpo_laco_prin:
-        lw a0, (a1)
-        li a7, 1
-        ecall
+        lb a0, (a1)
+        addi a0, a0, 64
+        addi a2, zero, 96
+        blt a2, a0, printa_atingido # printa posições atingidas e tiros na água
+        j printa_agua
+        printa_agua:
+            li a0, 64
+            li a7, 11
+            ecall
+            j continua_prin
+        printa_atingido:
+            li a7, 11
+            ecall
 
+        continua_prin:
         la a0, space
         li a7, 4
         ecall
@@ -222,6 +241,49 @@ zera_matriz:
         j teste_condicao_zen
     fim_zen:
         ret
+jogo:
+    la a0, msg_2
+    li a7, 4
+    ecall
 
+    addi t1, zero, 1
+    teste_condicao_jogo:
+        beq s11, zero, fim_jogo
+    corpo_laco_jogo:
+        la a0, menu_jogo
+        li a7, 4
+        ecall
+        li a7, 5
+        ecall # a0 é o int
+        la a0, br_n
+        li a7, 4
+        ecall
+
+        beq a0, zero, reinicia
+        beq a0, t1, mostra_mat
+        j jogada
+
+        reinicia:
+            add s10, zero, ra
+            jal zera_matriz # limpa as alterações da matriz
+            jal insere_embarcacoes # insere novamente podendo escolher um novo conjunto de barcos
+            add ra, zero, s10
+            j incremento_controle_jogo
+
+        mostra_mat:
+            add s10, zero, ra
+            jal printa_matriz
+            add ra, zero, s10
+            j incremento_controle_jogo
+
+        jogada:
+
+
+    incremento_controle_jogo:
+    fim_jogo:
+        ret
+
+printa_situacao:
+    
 fim:
     nop
