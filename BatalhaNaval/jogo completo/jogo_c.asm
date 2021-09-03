@@ -1,8 +1,8 @@
     .data
 matriz:     .word     0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0
+controle_barcos:    .word  0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0
 recorde:    .word     0,0,0
 voce:       .word     0,0,0,0,0
-controle_barcos:    .space  400
 situacaojogo_msg:   .string     "A sua situção de jogo atual se encotra da forma:\n"
 recorde_msg: .string     "Recorde\n"
 voce_msg:   .string     "Você\n"
@@ -12,7 +12,7 @@ afundados_msg:  .string     "\tAfundados: "
 ultimotiro_msg:    .string     "\tÚltimo Tiro: "
 navios1:     .string     "4\n0 4 1 1 \n0 4 3 0 \n1 2 7 3 \n1 5 3 5 " # disposicao, comprimento, linha inicial, coluna inicial
 navios2:     .string     "2\n0 5 2 1 \n1 4 2 4 " # posicao invalida de teste
-navios3:     .string     "1\n0 7 0 4 " # comprimento invalido de teste
+navios3:     .string     "1\n0 4 1 1 " # comprimento invalido de teste
 # matriz_tiro: .string     ""
 # navio:      .string     "ABCDEFGHIO¤"
 msg_1:      .string     "Escolha o conjunto de posicionamento dos navios (1, 2 ou 3): "
@@ -25,6 +25,7 @@ tiro:       .string     "Insira as posições de tiro (linha coluna): "
 atingiu:    .string     "Barco Atingido!\n"
 errou:      .string     "O tiro caiu na água!\n"
 afundou:    .string     "Você afundou o barco!\n"
+terminou:   .string     "Você venceu! Todos os barcos foram afundados!\n"
 br_n:       .string     "\n"
 space:      .string     " "
     .text
@@ -76,7 +77,8 @@ insere_embarcacoes:
 
     addi a1, a1, 2
     addi s9, zero, 32 # espaco na tabela ascii
-    la s1, controle_barcos
+    la s6, controle_barcos # para afundamento de barcos
+    la s5, controle_barcos # para fim da partida (todos barcos afundados)
     teste_condicao_ins:
         beq t0, zero, fim_ins
     corpo_laco_ins:
@@ -105,8 +107,8 @@ insere_embarcacoes:
         lb a4, (a1)
         bne a4, s9, pos_invalida # erro de pos invalida
 
-        sw t3, (s1)
-        addi s1, s1, 8 # informações úteis para controlarmos quando um barco será afundado
+        sw t3, (s6)
+        addi s6, s6, 8 # informações úteis para controlarmos quando um barco será afundado
 
         # Deslocamento = (L * QTD_colunas + C) * 4
         addi t6, zero, 10
@@ -123,6 +125,9 @@ insere_embarcacoes:
             lw a3, (a2)
             bne a3, zero, sobre_invalido
             sw s11, (a2)
+            lw s4, (s5) 
+            addi s4, s4, 1
+            sw s4, (s5) # estou contando as posições do barco para no final saber quando o jogo terminou
         incremento_controle_ins_h:
             addi t3, t3, -1
             beq a5, zero, horizontal_ins # beq a5, t2, vertical_ins
@@ -287,6 +292,31 @@ zera_matriz:
         j teste_condicao_zen
     fim_zen:
         ret
+zera_voce:
+    la s0, voce
+    sw zero, (s0)
+    addi s0, s0, 4
+    sw zero, (s0)
+    addi s0, s0, 4
+    sw zero, (s0)
+    addi s0, s0, 4
+    ret
+
+zera_controledebarcos:
+    la s0, controle_barcos
+    add t0, zero, zero
+    addi t1, zero, 20
+
+    teste_condicao_zera:
+        beq t0, t1, fim_zera
+    corpo_laco_zera:
+        sw zero, (s0)
+    incremento_controle_zera:
+        addi s0, s0, 4
+        addi t0, t0, 1
+        j teste_condicao_zera
+    fim_zera:
+        ret
 jogo:
     la a0, msg_2
     li a7, 4
@@ -314,6 +344,8 @@ jogo:
         reinicia:
             add s10, zero, ra
             jal zera_matriz # limpa as alterações da matriz
+            jal zera_voce
+            jal zera_controledebarcos
             jal insere_embarcacoes # insere novamente podendo escolher um novo conjunto de barcos
             add ra, zero, s10
             j incremento_controle_jogo
@@ -331,6 +363,14 @@ jogo:
             add s10, zero, ra
             jal jogar
             add ra, zero, s10
+            # verfica o fim abaixo
+            la s0, controle_barcos
+            lw s2, (s0)
+            addi s0, s0, 4
+            lw s1, (s0)
+            addi s1, s1, 1
+            sw s1, (s0)
+            beq s1, s2, fim_jogo_vitoria
             j incremento_controle_jogo
 
         sair:
@@ -342,6 +382,28 @@ jogo:
         jal printa_situacao
         add ra, zero, s10
         j teste_condicao_jogo
+    fim_jogo_vitoria:
+        la a0, terminou
+        li a7, 4
+        ecall
+        la s0, voce
+        la s1, recorde
+        lw s2, (s0)
+        lw s3, (s1) # vou usar a menor quantidade de tiros como critério de recorde, foi o que consegui ver como melhor
+        blt s2, s3, salva_novo_recorde # se você deu menos tiros que o recorde
+        j reinicia
+
+        salva_novo_recorde:
+            sw s2, (s1)
+            addi s0, s0, 4
+            addi s1, s1, 4
+            lw s2, (s0)
+            sw s2, (s1)
+            addi s0, s0, 4
+            addi s1, s1, 4
+            lw s2, (s0)
+            sw s2, (s1)
+            j reinicia
     fim_jogo:
         ret
 
@@ -527,7 +589,6 @@ jogar:
         lw a4, (a5)
         addi a4, a4, 1
         sw a4, (a5)
-        # j fim_jogar
 
     fim_jogar:
         beq s1, s2, barco_afundado
