@@ -2,7 +2,8 @@
 matriz:     .word     0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0
 recorde:    .word     0,0,0
 voce:       .word     0,0,0,0,0
-situacaojogo_msg:   .string     "A suasitução de jogo atual se encotra da forma:\n"
+controle_barcos:    .space  400
+situacaojogo_msg:   .string     "A sua situção de jogo atual se encotra da forma:\n"
 recorde_msg: .string     "Recorde\n"
 voce_msg:   .string     "Você\n"
 tiros_msg:    .string    "\tTiros: "
@@ -19,14 +20,17 @@ invalida_fora:      .string     "Posição inválida por estar fora da matriz"
 invalida_sobreposto:  .string    "Posição inválida por estar sobreescrevendo navio existente"
 invalida_maior:       .string     "Posição inválida pois o navio é maior que a matriz"
 msg_2:      .string     "Bem vindo à batalha naval!\n"
-menu_jogo:       .string     "O que deseja fazer agora?\n0 - Reiniciar o game\n1 - Mostrar o estado da matriz, recorde e sua situação no jogo\n2 - Fazer uma jogada\n$ "
+menu_jogo:       .string     "O que deseja fazer agora?\n0 - Reiniciar o game\n1 - Mostrar o estado da matriz(espião)\n2 - Fazer uma jogada\n3 - Terminar o jogo\n$ "
 tiro:       .string     "Insira as posições de tiro (linha coluna): "
+atingiu:    .string     "Barco Atingido!\n"
+errou:      .string     "O tiro caiu na água!\n"
 br_n:       .string     "\n"
 space:      .string     " "
     .text
 main:
     jal insere_embarcacoes
-    jal printa_matriz
+    # jal printa_matriz
+    jal jogo
     j fim
 insere_embarcacoes:
     la a0, msg_1
@@ -191,7 +195,7 @@ insere_embarcacoes:
         j fim
         # ret
 
-printa_matriz:
+printa_matriz_padrao:
     add t0, zero, zero # quando chegar em 100, termina
     addi t1, zero, 100 
     add t2, zero, zero # a cada 10, um \n
@@ -203,7 +207,7 @@ printa_matriz:
         j corpo_laco_prin
     pula_prin:
         add t2, zero, zero
-        li a0, 32 # código ascii do espaço
+        li a0, 10 # código ascii do espaço
         li a7, 11 # printa char
         ecall
     corpo_laco_prin:
@@ -221,7 +225,7 @@ printa_matriz:
             li a7, 11
             ecall
         continua_prin:
-        la a0, 10 # código ascii do \n
+        li a0, 32 # código ascii do espaco
         li a7, 11 # printa char
         ecall
 
@@ -233,6 +237,38 @@ printa_matriz:
     fim_prin:
         ret
 
+printa_matriz_espiao:
+    add t0, zero, zero # quando chegar em 100, termina
+    addi t1, zero, 100 
+    add t2, zero, zero # a cada 10, um \n
+    addi t3, zero, 10
+    la a1, matriz
+    teste_condicao_esp:
+        beq t0, t1, fim_esp
+        beq t2, t3, pula_esp
+        j corpo_laco_esp
+    pula_esp:
+        add t2, zero, zero
+        li a0, 10
+        li a7, 11
+        ecall
+    corpo_laco_esp:
+        lw a0, (a1)
+        addi a0, a0, 64
+        li a7, 11
+        ecall
+
+        li a0, 32
+        li a7, 11
+        ecall
+
+    incremento_controle_esp:
+        addi a1, a1, 4
+        addi t0, t0, 1
+        addi t2, t2, 1
+        j teste_condicao_esp
+    fim_esp:
+        ret
 zera_matriz:
     add s2, zero, zero # quando chegar em 100, termina
     addi s3, zero, 100 
@@ -253,21 +289,26 @@ jogo:
     ecall
 
     addi t1, zero, 1
+    addi t2, zero, 2
+    addi s11, zero, 1
     teste_condicao_jogo:
         beq s11, zero, fim_jogo
     corpo_laco_jogo:
+        addi t1, zero, 1
+        addi t2, zero, 2
         la a0, menu_jogo
         li a7, 4
         ecall
         li a7, 5
         ecall # a0 é o int
-        la a0, br_n
-        li a7, 4
-        ecall
+        # la a0, br_n
+        # li a7, 4
+        # ecall
 
         beq a0, zero, reinicia
         beq a0, t1, mostra_mat
-        j jogada
+        beq a0, t2, jogada
+        j sair
 
         reinicia:
             add s10, zero, ra
@@ -278,20 +319,27 @@ jogo:
 
         mostra_mat:
             add s10, zero, ra
-            jal printa_situacao
-            jal printa_matriz
+            jal printa_matriz_espiao
+            add ra, zero, s10
             li a0, 10
             li a7, 11
             ecall
-            add ra, zero, s10
             j incremento_controle_jogo
 
         jogada:
             add s10, zero, ra
             jal jogar
             add ra, zero, s10
+            j incremento_controle_jogo
+
+        sair:
+            # add s11, zero, zero
+            j fim
 
     incremento_controle_jogo:
+        add s10, zero, ra
+        jal printa_situacao
+        add ra, zero, s10
         j teste_condicao_jogo
     fim_jogo:
         ret
@@ -392,13 +440,26 @@ printa_situacao:
     li a0, 10
     li a7, 11
     ecall
+    # ----------------------------------
+    add s10, zero, ra
+    jal printa_matriz_padrao
+    add ra, zero, s10
+
+    li a0, 10
+    li a7, 11
+    ecall
 
     ret
 jogar:
+    la a5, voce
+    lw a4, (a5)
+    addi a4, a4, 1
+    sw a4, (a5)
+
     la a0, tiro
     li a7, 4
     ecall
-    li a1, 3
+    li a1, 4
     li a7, 8 # vamos ler uma string
     ecall # a0 é a string
     add a1, a0, zero
@@ -413,6 +474,12 @@ jogar:
     addi a1, a1, 2 # pulamos para a coluna
     lb a3, (a1) # coluna
     addi a3, a3, -48 # a3 coluna
+    la a5, voce
+    addi a5, a5, 12
+    lw a4, (a5)
+    sw a2, (a5)
+    addi a5, a5, 4
+    sw a3, (a5)
 
     # Deslocamento = (L * QTD_colunas + C) * 4
     mul a2, a2, t2
@@ -421,15 +488,31 @@ jogar:
     add s9, zero, s10 # salva o deslocamento para na próxima limpar a posição do tiro
 
     la a1, matriz
-    add a1, zero, s0
+    add a1, a1, s0
     lw a2, (a1)
     bne a2, zero, barco_atingido
-    addi a2, zero, 48 # representa o "o" após a soma com 64 feita na hora da função de print
+    addi t6, zero, 32
+    bge a2, t6, pula
+    addi a2, zero, 47 # representa o "o" após a soma com 64 feita na hora da função de print
+    pula:
+    la a0, errou
+    li a7, 4
+    ecall
     sw a2, (a1)
     ret
     barco_atingido:
-        addi a2, a2, 33
+        la a0, atingiu
+        li a7, 4
+        ecall
+        bge a2, t6, pulaa
+        addi a2, a2, 32
+        sw a2, (a1)
+        pulaa:
+        la a5, voce
+        addi a5, a5, 4
+        lw a4, (a5)
+        addi a4, a4, 1
+        sw a4, (a5)
         ret
-
 fim:
     nop
