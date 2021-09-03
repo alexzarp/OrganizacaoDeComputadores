@@ -24,6 +24,7 @@ menu_jogo:       .string     "O que deseja fazer agora?\n0 - Reiniciar o game\n1
 tiro:       .string     "Insira as posições de tiro (linha coluna): "
 atingiu:    .string     "Barco Atingido!\n"
 errou:      .string     "O tiro caiu na água!\n"
+afundou:    .string     "Você afundou o barco!\n"
 br_n:       .string     "\n"
 space:      .string     " "
     .text
@@ -75,6 +76,7 @@ insere_embarcacoes:
 
     addi a1, a1, 2
     addi s9, zero, 32 # espaco na tabela ascii
+    la s1, controle_barcos
     teste_condicao_ins:
         beq t0, zero, fim_ins
     corpo_laco_ins:
@@ -86,7 +88,6 @@ insere_embarcacoes:
         lb a4, (a1) # string com a descricao dos navios
         addi a4, a4, -48
         addi t3, a4, 0 # comprimento do navio
-
 
         addi a1, a1, 2
         lb a4, (a1) # string com a descricao dos navios
@@ -103,6 +104,9 @@ insere_embarcacoes:
         addi a1, a1, 1
         lb a4, (a1)
         bne a4, s9, pos_invalida # erro de pos invalida
+
+        sw t3, (s1)
+        addi s1, s1, 8 # informações úteis para controlarmos quando um barco será afundado
 
         # Deslocamento = (L * QTD_colunas + C) * 4
         addi t6, zero, 10
@@ -301,9 +305,6 @@ jogo:
         ecall
         li a7, 5
         ecall # a0 é o int
-        # la a0, br_n
-        # li a7, 4
-        # ecall
 
         beq a0, zero, reinicia
         beq a0, t1, mostra_mat
@@ -334,7 +335,7 @@ jogo:
 
         sair:
             # add s11, zero, zero
-            j fim
+            j fim_jogo
 
     incremento_controle_jogo:
         add s10, zero, ra
@@ -499,12 +500,25 @@ jogar:
     li a7, 4
     ecall
     sw a2, (a1)
-    ret
+    j fim_jogar
     barco_atingido:
         la a0, atingiu
         li a7, 4
         ecall
         bge a2, t6, pulaa
+
+        la s0, controle_barcos
+        add s1, zero, a2
+        addi s1, s1, -1 # o barco 1 se torna 0, pois ele está na posição 0 do controle_barcos
+        addi s2, zero, 8 # usando o proóprio valor do barco -1, pulamos de duas em duas posições até encontrar o barco certo
+        mul s1, s1, s2
+        add s0, s0, s1
+        lw s1, (s0)
+        addi s0, s0, 4
+        lw s2, (s0)
+        addi s2, s2, 1
+        sw s2, (s0)
+
         addi a2, a2, 32
         sw a2, (a1)
         pulaa:
@@ -513,6 +527,22 @@ jogar:
         lw a4, (a5)
         addi a4, a4, 1
         sw a4, (a5)
+        # j fim_jogar
+
+    fim_jogar:
+        beq s1, s2, barco_afundado
         ret
+
+    barco_afundado:
+        la a0, afundou
+        li a7, 4
+        ecall
+        la a1, voce
+        addi a1, a1, 8 # pulamos para a contagem de afundados
+        lw a2, (a1)
+        addi a2, a2, 1
+        sw a2, (a1)
+        ret
+
 fim:
     nop
