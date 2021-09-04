@@ -1,7 +1,7 @@
     .data
 matriz:     .word     0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0
 controle_barcos:    .word  0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0
-recorde:    .word     0,0,0
+recorde:    .word     99,99,99 # tenho que partir de um valor maior que 0 para comportar a condição de salvamento
 voce:       .word     0,0,0,0,0
 situacaojogo_msg:   .string     "A sua situção de jogo atual se encotra da forma:\n"
 recorde_msg: .string     "Recorde\n"
@@ -525,8 +525,8 @@ jogar:
     li a7, 8 # vamos ler uma string
     ecall # a0 é a string
     add a1, a0, zero
-    li a0, 10
-    li a7, 11
+    li a0, 10 # \n na tabela ascii
+    li a7, 11 # printar char
     ecall # pula a linha
 
     addi t2, zero, 10
