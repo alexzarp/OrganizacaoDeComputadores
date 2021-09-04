@@ -1,3 +1,6 @@
+# Trabalho feito por:
+# Alex Sandro Zarpelon - 1911100039
+# Bruna Gabriela Disner - 1911100007
     .data
 matriz:     .word     0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0
 controle_barcos:    .word  0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0
@@ -24,29 +27,33 @@ atingiu:    .string     "Barco Atingido!\n"
 errou:      .string     "O tiro caiu na água!\n"
 afundou:    .string     "Você afundou o barco!\n"
 terminou:   .string     "Você venceu! Todos os barcos foram afundados!\n"
-br_n:       .string     "\n"
-space:      .string     " "
+# br_n:       .string     "\n"
+# space:      .string     " "
     .text
 main:
     jal insere_embarcacoes
     jal jogo
     j fim
+
+# a função "insere_embarcações" recebe como parâmetro a "matriz" para inserção dos barcos, 
+# "controle_barcos" para registro do comprimento e comprimento de soma total dos barcos para fins de se afudou ou não,
+# "navios1", "navios2" e "navios3" que descrevem como os barcos serão colocados na "matriz"
 insere_embarcacoes:
     la a0, msg_1
     li a7, 4
-    ecall
+    ecall # mostra a mensagem para escolha de um conjunto de barcos
 
     li a7, 5 # a0 é o int
-    ecall
+    ecall # solicita o inteiro
     
     addi t0, zero, 1
     beq a0, t0, carrega1
     addi t0, zero, 2
     beq a0, t0, carrega2
     addi t0, zero, 3
-    beq a0, t0, carrega3
+    beq a0, t0, carrega3 # switch que leva para o conjunto de barcos escolhido
 
-    carrega1:
+    carrega1: # -------
         la a1, navios1
         j continua_ins
     carrega2:
@@ -54,22 +61,19 @@ insere_embarcacoes:
         j continua_ins
     carrega3:
         la a1, navios3
-        # j continua_ins # 
     
-    la a0, br_n
-    li a7, 4
-    ecall
+    li a0, 10
+    li a7, 11
+    ecall # ------ continuação do switch de escolha do conjunto de barcos
 
     continua_ins:
     addi s11, zero, 1 # contagem barco
-    # add t1, zero, zero # para navios diposicao horizontal
-    # addi t2, zero, 1 # para navios disposição vertical
 
     la a2, matriz # a2 navios
     lw a3, (a2) # matriz onde vai os navios
     lb a4, (a1) # string com a descricao dos navios
 
-    addi a4, a4, -48
+    addi a4, a4, -48 # toda vez que se faz -48, é para obter o valor absoluto lido da string
     add t0, a4, zero # contagem de navios
 
     addi a1, a1, 2
@@ -79,7 +83,7 @@ insere_embarcacoes:
     la s5, controle_barcos # para fim da partida (todos barcos afundados)
     teste_condicao_ins:
         beq t0, zero, fim_ins
-    corpo_laco_ins:
+    corpo_laco_ins: # nessa parte é um loop que obtem a informação de cada barco da string
         lb a4, (a1) # string com a descricao dos navios
         addi a4, a4, -48
         add a5, a4, zero # disposicao do navio
@@ -95,7 +99,7 @@ insere_embarcacoes:
         addi t4, a4, 0 # linha do navio
         addi a1, a1, 1
         lb a4, (a1)
-        bne a4, s9, pos_invalida # erro de pos invalida
+        bne a4, s9, pos_invalida # invalidação por poscionamento fora da matriz
 
         addi a1, a1, 1
         lb a4, (a1)
@@ -103,12 +107,13 @@ insere_embarcacoes:
         addi t5, a4, 0 # coluna do navio | t0 = contagem de navios, t3 = comprimento do navio, t4 = linha, t5 = coluna
         addi a1, a1, 1
         lb a4, (a1)
-        bne a4, s9, pos_invalida # erro de pos invalida
+        bne a4, s9, pos_invalida # invalidação por poscionamento fora da matriz
 
         sw t3, (s6)
         addi s6, s6, 8 # informações úteis para controlarmos quando um barco será afundado
 
         # Deslocamento = (L * QTD_colunas + C) * 4
+        # com os dados obtidos, calculamos e deslocamos para a posição inicial correta na matriz
         addi t6, zero, 10
         addi s3, zero, 4
         mul s0, t4, t6 # multiplicação da linha por 9(número de colunas da matriz)
@@ -117,39 +122,38 @@ insere_embarcacoes:
 
         add a2, a2, s0
         
-        teste_condicao_ins_h:
+        teste_condicao_ins_h: # este loop é responsável inserir o barco conforme seu comprimento e diposição
             beq t3, zero, fim_ins_h
         corpo_laco_ins_h:
             lw a3, (a2)
-            bne a3, zero, sobre_invalido
+            bne a3, zero, sobre_invalido # aqui é validado se o barco não sobreescreve outro já existente
             sw s11, (a2)
             lw s4, (s5) 
             addi s4, s4, 1
             sw s4, (s5) # estou contando as posições do barco para no final saber quando o jogo terminou
         incremento_controle_ins_h:
             addi t3, t3, -1
-            beq a5, zero, horizontal_ins # beq a5, t2, vertical_ins
+            beq a5, zero, horizontal_ins
             j vertical_ins
             # se for horizontal = coluna inicial + comprimento do navio >9 invalido
             # se for vertical = linha inical + comprimento do navio >9 invalido
             horizontal_ins:
                 add s8, t5, t3
                 addi s7, zero, 9
-                blt s7, s8, comp_invalido
+                blt s7, s8, comp_invalido # testamos se o comprimeto rompre a matriz
 
                 addi a2, a2, 4
                 j continua_ins_h
             vertical_ins:
                 add s8, t4, t3
                 addi s7, zero, 9
-                blt s7, s8, comp_invalido
+                blt s7, s8, comp_invalido # testamos se o comprimeto rompre a matriz
 
                 addi a2, a2, 40 # mesmo que 4 * 10 posições
             continua_ins_h:
                 j teste_condicao_ins_h
         fim_ins_h:
             addi s11, s11, 1
-            # j teste_condicao_ins
 
     incremento_controle_ins:
         addi t0, t0, -1
@@ -158,13 +162,13 @@ insere_embarcacoes:
         j teste_condicao_ins
     fim_ins:
         ret
-    pos_invalida:
+    pos_invalida: # aqui é notificada a invalidação por poscionamento fora da matriz
         la a0, invalida_fora
         li a7, 4
         ecall
 
-        la a0, br_n
-        li a7, 4
+        li a0, 10
+        li a7, 11
         ecall
 
         add s10, zero, ra
@@ -172,13 +176,13 @@ insere_embarcacoes:
         add ra, zero, s10
         j fim
         # ret
-    comp_invalido:
+    comp_invalido: # aqui é notificada a invalidação por comprimento rompendo a matriz
         la a0, invalida_maior
         li a7, 4
         ecall
 
-        la a0, br_n
-        li a7, 4
+        li a0, 10
+        li a7, 11
         ecall
 
         add s10, zero, ra
@@ -187,13 +191,13 @@ insere_embarcacoes:
         j fim
         # ret
 
-    sobre_invalido:
+    sobre_invalido: # aqui é notificada a invalidação por sobreposição do barco
         la a0, invalida_sobreposto
         li a7, 4
         ecall
 
-        la a0, br_n
-        li a7, 4
+        li a0, 10
+        li a7, 11
         ecall
         
         add s10, zero, ra
@@ -202,6 +206,9 @@ insere_embarcacoes:
         j fim
         # ret
 
+# a função "printa_matriz_padrao" recebe como parâmetro a "matriz",
+# à partir da matriz imprime os barcos atingidos e os tiros na água com base em uma soma que resulta em letras na tabela ASCII,
+# "o" reprenta um tira na água, "a" ou "b" etc, reoresentam o respectivo barco e sua posição atingida
 printa_matriz_padrao:
     add t0, zero, zero # quando chegar em 100, termina
     addi t1, zero, 100 
@@ -244,6 +251,10 @@ printa_matriz_padrao:
     fim_prin:
         ret
 
+# a função "printa_matriz_espiao" recebe como parâmetro a "matriz",
+# é reposnsável por printar tudo o que está na matriz se esconder nada, com base em soma na tabela ASCII gerando letras,
+# "o" reprenta um tira na água, "a" ou "b" etc, reoresentam o respectivo barco e sua posição atingida,
+# "A" ou "B" etc, representam um barco flutuante não atingido na determina posição
 printa_matriz_espiao:
     add t0, zero, zero # quando chegar em 100, termina
     addi t1, zero, 100 
@@ -276,6 +287,8 @@ printa_matriz_espiao:
         j teste_condicao_esp
     fim_esp:
         ret
+# a função "zera_matriz" recebe como parâmetro a "matriz",
+# é reposável por fazer a limpeza de todos os barcos para que uma novo jogo com novos barcos seja iniciado futuramente
 zera_matriz:
     add s2, zero, zero # quando chegar em 100, termina
     addi s3, zero, 100 
@@ -290,6 +303,8 @@ zera_matriz:
         j teste_condicao_zen
     fim_zen:
         ret
+# a função "zera_voce" recebe como parâmetro a .word "voce",
+# responsável por zerar suas estatíticas de jogo ao final de uma partida, para dar espaço para uma nova partida futura
 zera_voce:
     la s0, voce
     sw zero, (s0)
@@ -300,6 +315,8 @@ zera_voce:
     addi s0, s0, 4
     ret
 
+# a função "zera_controledebarcos" recebe como parâmetro a .word "controle_barcos",
+# responsável por zerar a .word "controle_barcos" para permitir o controle de afundamentos em uma nova partida futura
 zera_controledebarcos:
     la s0, controle_barcos
     add t0, zero, zero
@@ -315,8 +332,11 @@ zera_controledebarcos:
         j teste_condicao_zera
     fim_zera:
         ret
+# a função jogo recebe como parâmetro todos os parâmetros das outras funções, pois ela é um switch de opções,
+# para seu uso interno, recebe como parâmetro a .word "voce" e .word "recorde",
+# faz o controle de fim de jogo e inicia uma nova partida automaticamente
 jogo:
-    la a0, msg_2
+    la a0, msg_2 # mensagem de boas vindas
     li a7, 4
     ecall
 
@@ -337,9 +357,9 @@ jogo:
         beq a0, zero, reinicia
         beq a0, t1, mostra_mat
         beq a0, t2, jogada
-        j sair
+        j sair # switch para uso do jogo
 
-        reinicia:
+        reinicia: # caso quisermos reiniciar em uma nova partida
             add s10, zero, ra
             jal zera_matriz # limpa as alterações da matriz
             jal zera_voce
@@ -348,7 +368,7 @@ jogo:
             add ra, zero, s10
             j incremento_controle_jogo
 
-        mostra_mat:
+        mostra_mat: # caso quisermos mostrar a matriz em modo espião
             add s10, zero, ra
             jal printa_matriz_espiao
             add ra, zero, s10
@@ -357,7 +377,7 @@ jogo:
             ecall
             j incremento_controle_jogo
 
-        jogada:
+        jogada: # caso quisermos jogar
             add s10, zero, ra
             jal jogar
             add ra, zero, s10
@@ -366,14 +386,12 @@ jogo:
             lw s2, (s0)
             addi s0, s0, 4
             lw s1, (s0)
-            addi s1, s1, 1
-            sw s1, (s0)
+            # addi s1, s1, 1
+            # sw s1, (s0)
             beq s1, s2, fim_jogo_vitoria
             j incremento_controle_jogo
 
-        sair:
-            # add s11, zero, zero
-            # j fim_jogo
+        sair: # para sair do jogo, simplesmente dropa o programa
             j fim
 
     incremento_controle_jogo:
@@ -381,7 +399,7 @@ jogo:
         jal printa_situacao
         add ra, zero, s10
         j teste_condicao_jogo
-    fim_jogo_vitoria:
+    fim_jogo_vitoria: # somos direcionados para cá caso todos barcos tenham sido afundados
         la a0, terminou
         li a7, 4
         ecall
@@ -392,7 +410,7 @@ jogo:
         blt s2, s3, salva_novo_recorde # se você deu menos tiros que o recorde
         j reinicia
 
-        salva_novo_recorde:
+        salva_novo_recorde: # somos direionados para cá caso um novo recorde seja aplicável
             sw s2, (s1)
             addi s0, s0, 4
             addi s1, s1, 4
@@ -406,6 +424,8 @@ jogo:
     fim_jogo:
         ret
 
+# a função "printa_situação" recebe como parâmetro a .word "voce" e .word "recorde", além de todos parâmetros da função,
+# "printa_matriz_padrao", é reponsável após, cada jogada, mostrar a pontuação de jogo, recorde e situação de atingimento na matriz
 printa_situacao:
     la a0, situacaojogo_msg
     li a7, 4
@@ -512,6 +532,8 @@ printa_situacao:
     ecall
 
     ret
+# a função jogar recebe como parâmetro a .word "voce" e a "matriz",
+# é reponsável por solicitar as coordenadas do tiro e executá-las
 jogar:
     la a5, voce
     lw a4, (a5)
@@ -563,15 +585,20 @@ jogar:
     sw a2, (a1)
     j fim_jogar
     barco_atingido:
+        bge a2, t6, pulaa
         la a0, atingiu
         li a7, 4
         ecall
-        bge a2, t6, pulaa
+
+        la s0, controle_barcos
+        addi s0, s0, 4
+        lw s1, (s0)
+        addi s1, s1, 1
+        sw s1, (s0)
 
         la s0, controle_barcos
         add s1, zero, a2
-        # addi s1, s1, -1 # o barco 1 se torna 0, pois ele está na posição 0 do controle_barcos
-        addi s2, zero, 8 # usando o proóprio valor do barco -1, pulamos de duas em duas posições até encontrar o barco certo
+        addi s2, zero, 8 # usando o proóprio valor do barco, pulamos de duas em duas posições até encontrar o barco certo
         mul s1, s1, s2
         add s0, s0, s1
         lw s1, (s0)
@@ -604,5 +631,6 @@ jogar:
         sw a2, (a1)
         ret
 
+# fim é um flag para indicar o encerramento do programa
 fim:
     nop
