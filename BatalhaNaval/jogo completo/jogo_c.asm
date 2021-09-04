@@ -11,10 +11,8 @@ acertos_msg:  .string    "\tAcertos: "
 afundados_msg:  .string     "\tAfundados: "
 ultimotiro_msg:    .string     "\tÚltimo Tiro: "
 navios1:     .string     "4\n0 4 1 1 \n0 4 3 0 \n1 2 7 3 \n1 5 3 5 " # disposicao, comprimento, linha inicial, coluna inicial
-navios2:     .string     "2\n0 5 2 1 \n1 4 2 4 " # posicao invalida de teste
+navios2:     .string     "2\n0 4 1 1 \n0 4 3 0 " # posicao invalida de teste
 navios3:     .string     "1\n0 4 1 1 " # comprimento invalido de teste
-# matriz_tiro: .string     ""
-# navio:      .string     "ABCDEFGHIO¤"
 msg_1:      .string     "Escolha o conjunto de posicionamento dos navios (1, 2 ou 3): "
 invalida_fora:      .string     "Posição inválida por estar fora da matriz"
 invalida_sobreposto:  .string    "Posição inválida por estar sobreescrevendo navio existente"
@@ -31,7 +29,6 @@ space:      .string     " "
     .text
 main:
     jal insere_embarcacoes
-    # jal printa_matriz
     jal jogo
     j fim
 insere_embarcacoes:
@@ -78,6 +75,7 @@ insere_embarcacoes:
     addi a1, a1, 2
     addi s9, zero, 32 # espaco na tabela ascii
     la s6, controle_barcos # para afundamento de barcos
+    addi s6, s6, 8
     la s5, controle_barcos # para fim da partida (todos barcos afundados)
     teste_condicao_ins:
         beq t0, zero, fim_ins
@@ -375,7 +373,8 @@ jogo:
 
         sair:
             # add s11, zero, zero
-            j fim_jogo
+            # j fim_jogo
+            j fim
 
     incremento_controle_jogo:
         add s10, zero, ra
@@ -548,7 +547,7 @@ jogar:
     mul a2, a2, t2
     add a2, a2, a3
     mul s0, a2, t3 # resultado de deslocamento em s0
-    add s9, zero, s10 # salva o deslocamento para na próxima limpar a posição do tiro
+    # add s9, zero, s10 # salva o deslocamento para na próxima limpar a posição do tiro
 
     la a1, matriz
     add a1, a1, s0
@@ -571,7 +570,7 @@ jogar:
 
         la s0, controle_barcos
         add s1, zero, a2
-        addi s1, s1, -1 # o barco 1 se torna 0, pois ele está na posição 0 do controle_barcos
+        # addi s1, s1, -1 # o barco 1 se torna 0, pois ele está na posição 0 do controle_barcos
         addi s2, zero, 8 # usando o proóprio valor do barco -1, pulamos de duas em duas posições até encontrar o barco certo
         mul s1, s1, s2
         add s0, s0, s1
