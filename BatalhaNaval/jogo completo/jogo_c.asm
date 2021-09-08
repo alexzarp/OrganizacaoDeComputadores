@@ -6,6 +6,8 @@ matriz:     .word     0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0
 controle_barcos:    .word  0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0
 recorde:    .word     99,99,99 # tenho que partir de um valor maior que 0 para comportar a condição de salvamento
 voce:       .word     0,0,0,0,0
+space:      .space      46
+space_4:    .space      4
 situacaojogo_msg:   .string     "A sua situção de jogo atual se encotra da forma:\n"
 recorde_msg: .string     "Recorde\n"
 voce_msg:   .string     "Você\n"
@@ -543,9 +545,13 @@ jogar:
     la a0, tiro
     li a7, 4
     ecall
+    la a0, space
+    li a7, 4
+    ecall
     li a1, 4
     li a7, 8 # vamos ler uma string
     ecall # a0 é a string
+    
     add a1, a0, zero
     li a0, 10 # \n na tabela ascii
     li a7, 11 # printar char
