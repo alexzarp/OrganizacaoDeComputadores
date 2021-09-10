@@ -141,14 +141,14 @@ insere_embarcacoes:
             # se for vertical = linha inical + comprimento do navio >9 invalido
             horizontal_ins:
                 add s8, t5, t3
-                addi s7, zero, 9
+                addi s7, zero, 10
                 blt s7, s8, comp_invalido # testamos se o comprimeto rompre a matriz
 
                 addi a2, a2, 4
                 j continua_ins_h
             vertical_ins:
                 add s8, t4, t3
-                addi s7, zero, 9
+                addi s7, zero, 10
                 blt s7, s8, comp_invalido # testamos se o comprimeto rompre a matriz
 
                 addi a2, a2, 40 # mesmo que 4 * 10 posições
@@ -173,9 +173,9 @@ insere_embarcacoes:
         li a7, 11
         ecall
 
-        add s10, zero, ra
-        jal zera_matriz
-        add ra, zero, s10
+        # add s10, zero, ra
+        # jal zera_matriz
+        # add ra, zero, s10
         j fim
         # ret
     comp_invalido: # aqui é notificada a invalidação por comprimento rompendo a matriz
@@ -187,9 +187,9 @@ insere_embarcacoes:
         li a7, 11
         ecall
 
-        add s10, zero, ra
-        jal zera_matriz
-        add ra, zero, s10
+        # add s10, zero, ra
+        # jal zera_matriz
+        # add ra, zero, s10
         j fim
         # ret
 
@@ -202,9 +202,9 @@ insere_embarcacoes:
         li a7, 11
         ecall
         
-        add s10, zero, ra
-        jal zera_matriz
-        add ra, zero, s10
+        # add s10, zero, ra
+        # jal zera_matriz
+        # add ra, zero, s10
         j fim
         # ret
 
