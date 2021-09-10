@@ -347,9 +347,6 @@ jogo:
 
     addi t1, zero, 1
     addi t2, zero, 2
-    addi s11, zero, 1
-    teste_condicao_jogo:
-        beq s11, zero, fim_jogo
     corpo_laco_jogo:
         addi t1, zero, 1
         addi t2, zero, 2
@@ -403,7 +400,7 @@ jogo:
         add s10, zero, ra
         jal printa_situacao
         add ra, zero, s10
-        j teste_condicao_jogo
+        j corpo_laco_jogo
     fim_jogo_vitoria: # somos direcionados para cá caso todos barcos tenham sido afundados
         la a0, terminou
         li a7, 4
