@@ -33,7 +33,6 @@ terminou:   .string     "Você venceu! Todos os barcos foram afundados!\n"
 # space:      .string     " "
     .text
 main:
-    jal insere_embarcacoes
     jal jogo
     j fim
 
@@ -338,6 +337,10 @@ zera_controledebarcos:
 # para seu uso interno, recebe como parâmetro a .word "voce" e .word "recorde",
 # faz o controle de fim de jogo e inicia uma nova partida automaticamente
 jogo:
+    add s10, zero, ra
+    jal insere_embarcacoes
+    add ra, zero, s10
+
     la a0, msg_2 # mensagem de boas vindas
     li a7, 4
     ecall
