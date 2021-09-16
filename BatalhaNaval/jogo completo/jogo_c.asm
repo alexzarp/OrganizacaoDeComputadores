@@ -377,7 +377,7 @@ jogo:
             li a0, 10
             li a7, 11
             ecall
-            j incremento_controle_jogo
+            j corpo_laco_jogo
 
         jogada: # caso quisermos jogar
             add s10, zero, ra
