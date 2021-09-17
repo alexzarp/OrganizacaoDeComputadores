@@ -136,8 +136,8 @@ insere_embarcacoes:
             addi t3, t3, -1
             beq a5, zero, horizontal_ins
             j vertical_ins
-            # se for horizontal = coluna inicial + comprimento do navio >9 invalido
-            # se for vertical = linha inical + comprimento do navio >9 invalido
+            # se for horizontal = coluna inicial + comprimento do navio >10 invalido
+            # se for vertical = linha inical + comprimento do navio >10 invalido
             horizontal_ins:
                 add s8, t5, t3
                 addi s7, zero, 10
