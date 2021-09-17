@@ -8,7 +8,7 @@ recorde:    .word     99,99,99 # tenho que partir de um valor maior que 0 para c
 voce:       .word     0,0,0,0,0
 space:      .space      46
 space_4:    .space      4
-situacaojogo_msg:   .string     "A sua situção de jogo atual se encotra da forma:\n"
+situacaojogo_msg:   .string     "A sua situção de jogo atual se encontra da forma:\n"
 recorde_msg: .string     "Recorde\n"
 voce_msg:   .string     "Você\n"
 tiros_msg:    .string    "\tTiros: "
