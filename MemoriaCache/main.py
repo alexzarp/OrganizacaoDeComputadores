@@ -1,4 +1,5 @@
 import random as rd
+from random import randrange
 
 class CelulaMemoria(object):
     def __init__(self): # construtor 
@@ -39,7 +40,7 @@ class CelulaMemoria(object):
                 self.__linha = bits + self.__linha
 
 class BlocoMemoria(object):
-    def inicio(self):
+    def __init__(self):
         self.__celula = []
         self.__rotulo = '00000'
         
@@ -115,10 +116,26 @@ class LinhaCache(object):
                     bits = bits + '0'
                 self.__rotulo = bits + self.__fifo
 
-memoria = []
 def encheMemoria(memoria):
+    contador = 0
+    contBl = 0
     for bloco_memoria in range(32):
         bloco = BlocoMemoria()
+        bloco.setRotulo(str(format(contBl, "b")))
+        contBl+=1
 
         for celula_memoria in range(4):
             celula = CelulaMemoria()
+            celula.setDado(str(format(randrange(256), 'b')))
+            celula.setLinha(str(format(contador, 'b')))
+            contador+=1
+            bloco.addCelula(celula)
+
+        memoria.append(bloco)
+        
+
+    return memoria
+
+memoria = []
+memoria = encheMemoria(memoria)
+
