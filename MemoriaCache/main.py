@@ -1,5 +1,5 @@
 import random as rd
-from random import randrange
+# from random import randrange
 
 class CelulaMemoria(object):
     def __init__(self): # construtor 
@@ -85,6 +85,9 @@ class LinhaCache(object):
     
     def getBloco(self):
         return self.___bloco
+        
+    def setBloco(self, bloco):
+        self.__bloco = bloco
     
     def setRotulo(self, rotulo):
         if len(rotulo) <= 5:
@@ -118,24 +121,39 @@ class LinhaCache(object):
 
 def encheMemoria(memoria):
     contador = 0
-    contBl = 0
+    contBloco = 0
     for bloco_memoria in range(32):
         bloco = BlocoMemoria()
-        bloco.setRotulo(str(format(contBl, "b")))
-        contBl+=1
+        bloco.setRotulo(str(format(contBloco, "b")))
+        contBloco+=1
 
         for celula_memoria in range(4):
             celula = CelulaMemoria()
-            celula.setDado(str(format(randrange(256), 'b')))
+            celula.setDado(str(format(rd.randrange(256), 'b')))
             celula.setLinha(str(format(contador, 'b')))
             contador+=1
             bloco.addCelula(celula)
 
         memoria.append(bloco)
-        
 
     return memoria
 
+def insereCache(cache):
+    for bloco_cache in range(2):
+        linha = LinhaCache()
+        bloco = BlocoMemoria()
+        for linha_cache in range(4):
+            bloco.addCelula(CelulaMemoria())
+        linha.setBloco(bloco)
+        cache.append(linha)
+
+    return cache 
+
 memoria = []
+cache = []
 memoria = encheMemoria(memoria)
+cache = insereCache(cache)
+
+# ler conteudo de um endereço de memoria
+# escrever em um determinado endereco de memoria
 
