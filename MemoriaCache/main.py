@@ -87,8 +87,8 @@ class LinhaCache(object):
         return self.___bloco
         
     def setBloco(self, bloco):
-        self.__bloco = bloco
-        # __incrementaFifo(self)
+        # self.__bloco = bloco
+        self.__bloco.append(bloco)
     
     def setRotulo(self, rotulo):
         if len(rotulo) <= 5:
@@ -107,8 +107,8 @@ class LinhaCache(object):
         self.__fifo = fifo
         self.__completaBits(opcao = 'fifo')
 
-    def zeraFifo(self):
-        self.__fifo = '000'
+    # def zeraFifo(self):
+    #     self.__fifo = '000'
     
     def setValido(self, valido):
         self.__valido = valido
@@ -130,8 +130,12 @@ class LinhaCache(object):
                     bits = bits + '0'
                 self.__rotulo = bits + self.__fifo
 
-def incrementaFifo():
-    
+def incrementaFifo(cache, blocoDestino):
+    bloco = []
+    bloco.append(cache[blocoDestino].getBloco())
+    # for i in range(4): # sempre será 4, mas enfim
+    print(bloco)
+        
 
 def insereCache(cache):
     for bloco_cache in range(2):
@@ -167,12 +171,10 @@ def encheMemoria(memoria):
 #     for i, linha in cache:
 #         if linha.getRotulo() == endereco[0:5] and linha.getValida() == '1':
 
-    
-
 memoria = []
 cache = []
 memoria = encheMemoria(memoria)
 cache = insereCache(cache)
 # ler conteudo de um endereço de memoria
 # escrever em um determinado endereco de memoria
-
+incrementaFifo(cache, 0)
