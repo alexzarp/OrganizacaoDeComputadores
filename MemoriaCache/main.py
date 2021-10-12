@@ -88,16 +88,27 @@ class LinhaCache(object):
         
     def setBloco(self, bloco):
         self.__bloco = bloco
+        # __incrementaFifo(self)
     
     def setRotulo(self, rotulo):
         if len(rotulo) <= 5:
             self.__rotulo = rotulo
         self.__completaBits(opcao = 'rotulo')
     
-    def setFifo(self, fifo):
-        if len(fifo) <= 3:
-            self.__fifo = fifo
+    # def setFifo(self, fifo):
+    #     if len(fifo) <= 3:
+    #         self.__fifo = fifo
+    #     self.__completaBits(opcao = 'fifo')
+
+    def incrementaFifo(self):
+        fifo = int(self.__fifo, 2)
+        fifo+=1
+        fifo = str(format(fifo, "b"))
+        self.__fifo = fifo
         self.__completaBits(opcao = 'fifo')
+
+    def zeraFifo(self):
+        self.__fifo = '000'
     
     def setValido(self, valido):
         self.__valido = valido
@@ -119,6 +130,20 @@ class LinhaCache(object):
                     bits = bits + '0'
                 self.__rotulo = bits + self.__fifo
 
+def incrementaFifo():
+    
+
+def insereCache(cache):
+    for bloco_cache in range(2):
+        linha = LinhaCache()
+        bloco = BlocoMemoria()
+        for linha_cache in range(4):
+            bloco.addCelula(CelulaMemoria())
+        linha.setBloco(bloco)
+        cache.append(linha) 
+
+    return cache
+
 def encheMemoria(memoria):
     contador = 0
     contBloco = 0
@@ -138,22 +163,16 @@ def encheMemoria(memoria):
 
     return memoria
 
-def insereCache(cache):
-    for bloco_cache in range(2):
-        linha = LinhaCache()
-        bloco = BlocoMemoria()
-        for linha_cache in range(4):
-            bloco.addCelula(CelulaMemoria())
-        linha.setBloco(bloco)
-        cache.append(linha)
+# def buscaEnderecoCache(cache, endereco):
+#     for i, linha in cache:
+#         if linha.getRotulo() == endereco[0:5] and linha.getValida() == '1':
 
-    return cache 
+    
 
 memoria = []
 cache = []
 memoria = encheMemoria(memoria)
 cache = insereCache(cache)
-
 # ler conteudo de um endereço de memoria
 # escrever em um determinado endereco de memoria
 
