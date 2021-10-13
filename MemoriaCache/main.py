@@ -87,8 +87,8 @@ class LinhaCache(object):
         return self.___bloco
         
     def setBloco(self, bloco):
-        # self.__bloco = bloco
-        self.__bloco.append(bloco)
+        self.__bloco = bloco
+        #self.__bloco.append(bloco)
     
     def setRotulo(self, rotulo):
         if len(rotulo) <= 5:
@@ -174,6 +174,7 @@ def encheMemoria(memoria):
 memoria = []
 cache = []
 memoria = encheMemoria(memoria)
+print(memoria)
 cache = insereCache(cache)
 # ler conteudo de um endereço de memoria
 # escrever em um determinado endereco de memoria
