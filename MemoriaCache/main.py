@@ -132,7 +132,7 @@ class LinhaCache(object):
 
 def incrementaFifo(cache, blocoDestino):
     bloco = []
-    bloco.append(cache[blocoDestino].getBloco())
+    bloco.append(cache[blocoDestino].setBloco(bloco))
     # for i in range(4): # sempre será 4, mas enfim
     print(bloco)
         
