@@ -94,7 +94,7 @@ class LinhaCache(object):
         return self.__fifo
     
     def getBloco(self):
-        return self.___bloco
+        return self.__bloco
         
     def setBloco(self, bloco):
         # self.__bloco = bloco
@@ -131,17 +131,12 @@ class LinhaCache(object):
                 bits = ''
                 for i in range(diferenca):
                     bits = bits + '0'
-                self.__rotulo = bits + self.__fifo
+                self.__fifo = bits + self.__fifo
 
 def incrementaFifo(cache, conjuntoDestino):
-    conjunto = []
-    conjunto.append(cache[conjuntoDestino].getConjunto())
-    for linha in range(len(conjunto)):
-        linha = []
-        linha.append(conjunto[])
-        conjunto[linha].incrementaFifo()
-        print(conjunto[linha].getFifo())
-        
+    conjunto = cache[conjuntoDestino].getConjunto()
+    for linha_cache in range(len(conjunto)):
+        conjunto[linha_cache].incrementaFifo()
 # 2 conjuntos
 # 4 linhas dentro do conjunto
 # 1 bloco dentro da linha
@@ -152,10 +147,9 @@ def insereCache(cache):
         for linha_cache in range(4):
             linha = LinhaCache()
             bloco = BlocoMemoria()
+            celula = CelulaMemoria()
             for celula_memoria in range(4):
-                celula = CelulaMemoria()
                 bloco.addCelula(celula)
-            bloco.addCelula(celula)
             linha.setBloco(bloco)
             conjunto.addConjunto(linha)
         cache.append(conjunto)
@@ -182,9 +176,40 @@ def encheMemoria(memoria):
     return memoria
 
 # def buscaEnderecoCache(cache, endereco):
-#     for i, linha in cache:
+#     for linha in cache:
 #         if linha.getRotulo() == endereco[0:5] and linha.getValida() == '1':
 
+def conversor(numero, modo):
+    if modo == 'bpd':
+        numero = int(numero, 2)
+        
+    elif modo == 'dpb':
+        numero = str(format(numero, 'b'))
+
+    return numero
+
+def colocaNaCache(cache, memoria, rotulo):
+    for bloco in memoria:
+        if memoria[bloco].getRotulo() == rotulo:
+            conjunto
+            if rotulo[-1] == '0':
+                conjunto = cache[0].getConjunto()
+                incrementaFifo(cache, 0)
+            else:
+                conjunto = cache[1].getConjunto()
+                incrementaFifo(cache, 1)
+            maiorFifo = 0
+            for linha in conjunto:
+                if conversor(conjunto[linha].getFifo(), 'bpd') > maiorFifo:
+                    maiorFifo =  conversor(conjunto[linha].getFifo(), 'bpd')
+            for linha in conjunto:
+                if conversor(conjunto[linha].getFifo(), 'bpd') == maiorFifo:
+                    blocoCache = conjunto[linha].getBloco()
+                    for blocoMemo in memoria:
+                        if blocoCache.getRotulo() == blocoMemo.getRotulo():
+                            
+                
+                    break
 memoria = []
 cache = []
 memoria = encheMemoria(memoria)
