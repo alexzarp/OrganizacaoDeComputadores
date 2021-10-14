@@ -203,7 +203,7 @@ def conversor(numero, modo):
 def colocaNaCache(cache, memoria, rotulo):
     for bloco in memoria:
         if memoria[bloco].getRotulo() == rotulo:
-            conjunto
+            conjunto = []
             if rotulo[-1] == '0':
                 conjunto = cache[0].getConjunto()
                 incrementaFifo(cache, 0)
