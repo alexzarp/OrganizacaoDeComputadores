@@ -43,6 +43,9 @@ class BlocoMemoria(object):
     def __init__(self):
         self.__celula = []
         self.__rotulo = '00000'
+
+    def setBloco(self, bloco):
+        self.__celula = bloco
         
     def addCelula(self, celula):
         if len(self.__celula) < 4:
@@ -175,9 +178,18 @@ def encheMemoria(memoria):
 
     return memoria
 
-# def buscaEnderecoCache(cache, endereco):
-#     for linha in cache:
-#         if linha.getRotulo() == endereco[0:5] and linha.getValida() == '1':
+# 2 conjuntos
+# 4 linhas dentro do conjunto
+# 1 bloco dentro da linha
+# 4 celulas dentro do bloco
+def buscaEnderecoCache(cache, endereco):
+   pass
+        
+        
+    # cojunto = getConjunto()
+    # linhaDaCache = cojunto[0].getLinha()
+    # bloco = linhaDaCache[0].getBloco()
+    # celula = bloco[0].getCelula()
 
 def conversor(numero, modo):
     if modo == 'bpd':
@@ -202,14 +214,23 @@ def colocaNaCache(cache, memoria, rotulo):
             for linha in conjunto:
                 if conversor(conjunto[linha].getFifo(), 'bpd') > maiorFifo:
                     maiorFifo =  conversor(conjunto[linha].getFifo(), 'bpd')
-            for linha in conjunto:
+            for linha in conjunto: # coloquei na memória no retorno
                 if conversor(conjunto[linha].getFifo(), 'bpd') == maiorFifo:
                     blocoCache = conjunto[linha].getBloco()
                     for blocoMemo in memoria:
-                        if blocoCache.getRotulo() == blocoMemo.getRotulo():
-                            
-                
+                        if blocoCache.getRotulo() == memoria[blocoMemo].getRotulo():
+                            memoria[blocoMemo].setBloco(blocoCache.getCelula())
+                            break
                     break
+            for linha in conjunto: # coloca na cache no luga do fifo mais alto
+                if conversor(conjunto[linha].getFifo(), 'bpd') == maiorFifo:
+                    conjunto[linha].setBloco(memoria[bloco].getBloco())
+                    break
+            break
+            
+def escreveNaCache(cache, endereco):
+    pass
+
 memoria = []
 cache = []
 memoria = encheMemoria(memoria)
