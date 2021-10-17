@@ -182,9 +182,15 @@ def encheMemoria(memoria):
 # 4 linhas dentro do conjunto
 # 1 bloco dentro da linha
 # 4 celulas dentro do bloco
-def buscaEnderecoCache(cache, endereco):
-   pass
-        
+def buscaEnderecoCache(cache, memoria, endereco):
+    for conjunto in cache:
+        for linha in conjunto.getConjunto():
+            for bloco in linha.getBloco():
+                for i, celula in enumerate(bloco.getCelula()):
+                    if celula.getLinha() == endereco[0:5]:
+                        print("Esta na cache \n Linha da Cache: {}, Endereço: {}, Dado: {}".format(i, linha.getRotulo(),celula.getLinha(), celula.getDado()))
+                    else:
+                        colocaNaCache(cache, memoria, endereco)        
         
     # cojunto = getConjunto()
     # linhaDaCache = cojunto[0].getLinha()
@@ -200,11 +206,11 @@ def conversor(numero, modo):
 
     return numero
 
-def colocaNaCache(cache, memoria, rotulo):
+def colocaNaCache(cache, memoria, endereco):
     for bloco in memoria:
         if memoria[bloco].getRotulo() == rotulo:
             conjunto = []
-            if rotulo[-1] == '0':
+            if rotulo[-2] == '0':
                 conjunto = cache[0].getConjunto()
                 incrementaFifo(cache, 0)
             else:
@@ -231,8 +237,43 @@ def colocaNaCache(cache, memoria, rotulo):
 def escreveNaCache(cache, endereco):
     pass
 
+def printMemoria(memoria):
+    for bloco in memoria:
+        print("Bloco", bloco.getRotulo())
+        for celula in bloco.getCelula():
+            print("Linha {} - Dado: {}".format(celula.getLinha(), celula.getDado()))
+        print("\n")
+
+def printCache(cache):
+    conjunto_ = 0
+    for conjunto in cache:
+        print('Conjunto:', conjunto_, '=====================')
+        for linha in conjunto.getConjunto():
+            print("Endereço {} \t Valido {} \t Fifo: {} \t ". format(linha.getRotulo(), linha.getValido(), linha.getFifo()))
+            for bloco in linha.getBloco():
+                for celula in bloco.getCelula():
+                    print("Linha: {} - Dado: {}".format(celula.getLinha(), celula.getDado()))
+        conjunto_+=1
+
+def printBloco(bloco):
+    for celula in bloco.getCelula():
+        print("Linha: {} - Dado: {}".format(celula.getLinha(), celula.getDado()))
+
+
 memoria = []
 cache = []
 memoria = encheMemoria(memoria)
+#printMemoria(memoria)
 cache = insereCache(cache)
-incrementaFifo(cache, 0)
+printCache(cache)
+
+# while(True):
+#     op = int(input('Escolha a opção do que deseja fazer:\n0 - Ler conteúdo de determinado endereço de memória\n1 - Escrever em determinado endereço de memória\n2 - Mostrar estatísticas\n3 - Sair\n$ '))
+#     if op == 1:
+#         ender = str(input('Digite o endereço que deseja buscar: '))
+#         buscaEnderecoCache(cache, ender)
+#     elif op == 2:
+#         escr = str(input('Digite o endereço a ser escrito: '))
+#         # escreve na cache
+#     else:
+#         break
