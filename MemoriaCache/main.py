@@ -192,13 +192,14 @@ def buscaEnderecoCache(cache, memoria):
         #print(endereco)
     for conjunto in cache:
         for i, linha in enumerate(conjunto.getConjunto()):
-            if linha.getRotulo() == endereco[0:5]:
-                bloco = linha.getBloco()
-                #print("Bloco", bloco)
-                #celula = bloco.getCelula()
-                retorno = True
-                print("Esta na cache \n Linha da Cache: {}, Endereço: {}".format(i, linha.getRotulo()))
-                break
+            for bloco in linha.getBloco():
+                if linha.getRotulo() == endereco[0:5] and linha.getValido() == str(1):
+                    bloco = linha.getBloco()
+                    #print("Bloco", bloco)
+                    celula = bloco.getCelula()
+                    retorno = True
+                    print("Esta na cache \n Linha da Cache: {}, Bloco Rotulo {}, Linha do endereco {}, Endereco {}, Dado{} ".format(i, linha.getRotulo(),endereco[-2::], celula.getLinha(), celula.getDado() ))
+                    break
    
     if not retorno:
         print("Não foi encontrado na cache")
