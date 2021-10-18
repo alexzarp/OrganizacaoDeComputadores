@@ -93,6 +93,9 @@ class LinhaCache(object):
     def getValido(self):
         return self.__valido
     
+    def setValido(self):
+        self.__valido = '1'
+    
     def getFifo(self):
         return self.__fifo
     
@@ -248,7 +251,7 @@ def conversor(numero, modo):
 def colocaNaCache(cache, memoria, endereco):
     print('Entrou na coloca')
     for bloco in memoria:
-        if memoria[bloco].getRotulo() == endereco:
+        if bloco.getRotulo() == endereco:
             conjunto = []
             if endereco[-2] == '0':
                 conjunto = cache[0].getConjunto()
@@ -258,19 +261,21 @@ def colocaNaCache(cache, memoria, endereco):
                 incrementaFifo(cache, 1)
             maiorFifo = 0
             for linha in conjunto:
-                if conversor(conjunto[linha].getFifo(), 'bpd') > maiorFifo:
-                    maiorFifo =  conversor(conjunto[linha].getFifo(), 'bpd')
+                if conversor(linha.getFifo(), 'bpd') > maiorFifo:
+                    maiorFifo =  conversor(linha.getFifo(), 'bpd')
             for linha in conjunto: # coloquei na memória no retorno
-                if conversor(conjunto[linha].getFifo(), 'bpd') == maiorFifo:
-                    blocoCache = conjunto[linha].getBloco()
+                if conversor(linha.getFifo(), 'bpd') == maiorFifo:
+                    blocoCache = linha.getBloco()
                     for blocoMemo in memoria:
-                        if blocoCache.getRotulo() == memoria[blocoMemo].getRotulo():
-                            memoria[blocoMemo].setBloco(blocoCache.getCelula())
+                        if blocoCache.getRotulo() == blocoMemo.getRotulo():
+                            blocoMemo.setBloco(blocoCache.getCelula())
                             break
                     break
             for linha in conjunto: # coloca na cache no lugar do fifo mais alto
                 if conversor(conjunto[linha].getFifo(), 'bpd') == maiorFifo:
-                    conjunto[linha].setBloco(memoria[bloco].getBloco())
+                    linha.setBloco(memoria[bloco].getBloco())
+                    linha.setRotulo(memoria[bloco].getRotulo())
+                    linha.setValido()
                     break
             break
             
@@ -296,10 +301,11 @@ def escreve(cache, memoria):
         cont = 0
         # print('ab')
         for linha in conjunto.getConjunto():
-            if linha.getRotulo() == endereco[0:5]:
+            print(linha.getRotulo(), endereco[0:5])
+            if linha.getRotulo() == endereco[0:5] and linha.getValido() == '1':
                 bloco = linha.getBloco()
-                print(bloco.getRotulo())
-                celulas = bloco.getCelula()
+                # print(bloco.getRotulo())
+                celulas = bloco.getCelula() 
                 for celula in celulas:
                     if endereco == celula.getLinha():
                         celula.setDado(valor)
