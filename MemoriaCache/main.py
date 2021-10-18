@@ -277,12 +277,12 @@ def colocaNaCache(cache, memoria, endereco):
             
 def escreve(cache, memoria):
     # print()
-    endereco = int(input("Digite um endereço em decimal no intervalo de 0 a 128 "))
+    endereco = int(input("Digite um endereço em decimal no intervalo de 0 a 128: "))
     if endereco < 128 or endereco > 0:
         endereco = conversor(endereco,'dpb')
         endereco = completaEndereco(endereco)
     # print()
-    valor  = int(input("Digite o valor em decimal no intervalo de 0 a 256 "))
+    valor  = int(input("Digite o valor em decimal no intervalo de 0 a 256: "))
     if valor < 128 or valor > 0:
         valor = conversor(valor,'dpb')
         valor = completaValor(valor)
@@ -295,9 +295,11 @@ def escreve(cache, memoria):
     restart = True
     while restart:
         cont = 0
+        # print('ab')
         for linha in conjunto.getConjunto():
-            if linha.getRotulo == endereco[0:5]:
+            if linha.getRotulo() == endereco[0:5]:
                 bloco = linha.getBloco()
+                print(bloco.getRotulo())
                 celulas = bloco.getCelula()
                 for celula in celulas:
                     if endereco == celula.getLinha():
@@ -306,11 +308,14 @@ def escreve(cache, memoria):
                 restart = False
                 break
             elif cont != 4:
+                # print(cont)
                 cont+=1
                 continue
             else:
+                print('teste')
                 colocaNaCache(cache, memoria, endereco)
                 break
+        
     
 ####### print memoria
 def printMemoria(memoria):
