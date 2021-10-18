@@ -188,20 +188,21 @@ def buscaEnderecoCache(cache, memoria):
     if endereco < 128 or endereco > 0:
         endereco = conversor(endereco,'dpb')
         endereco = completaEndereco(endereco)
-        print(endereco)
+        buscaMemoria(memoria, endereco)
+        #print(endereco)
         for conjunto in cache:
             for i, linha in enumerate(conjunto.getConjunto()):
                 if linha.getRotulo() == endereco[0:5]:
                     bloco = linha.getBloco()
-                    celula = bloco.getCelula()
-                    print("Esta na cache \n Linha da Cache: {}, Endereço: {}, Dado: {}".format(i, linha.getRotulo(),celula.getLinha(), celula.getDado()))
+                    #celula = bloco.getCelula()
+                    #print("Esta na cache \n Linha da Cache: {}, Endereço: {}, Dado: {}".format(i, linha.getRotulo(),celula.getLinha(), celula.getDado()))
                     break
-            else:
-                print("Não foi encontrado na cache")
-                print("\n")
-                print("Procurando na memória")
-                buscaMemoria(memoria, endereco)
-                colocaNaCache(cache, memoria, endereco)  
+                else:
+                    print("Não foi encontrado na cache")
+                    print("\n")
+                    print("Procurando na memória")
+                    buscaMemoria(memoria, endereco)
+                    colocaNaCache(cache, memoria, endereco)  
                           
 def completaEndereco(endereco):
     if len(endereco) != 7:
@@ -216,6 +217,7 @@ def buscaMemoria(memoria, endereco):
         if bloco.getRotulo() == endereco[0:5]:
             print("Encontrado na cache: endereço {} bloco {}".format(endereco, bloco.getRotulo()))
         break
+    return bloco
 
     # cojunto = getConjunto()
     # linhaDaCache = cojunto[0].getLinha()
@@ -287,11 +289,12 @@ def printBloco(bloco):
 
 memoria = []
 cache = []
-#memoria = encheMemoria(memoria)
-printMemoria(memoria)
+memoria = encheMemoria(memoria)
 cache = insereCache(cache)
-buscaEnderecoCache(cache, memoria)
-printCache(cache)
+#buscaEnderecoCache(cache, memoria)
+printMemoria(memoria)
+
+#printCache(cache)
 
 # while(True):
 #     op = int(input('Escolha a opção do que deseja fazer:\n0 - Ler conteúdo de determinado endereço de memória\n1 - Escrever em determinado endereço de memória\n2 - Mostrar estatísticas\n3 - Sair\n$ '))
