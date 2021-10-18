@@ -272,9 +272,9 @@ def colocaNaCache(cache, memoria, endereco):
                             break
                     break
             for linha in conjunto: # coloca na cache no lugar do fifo mais alto
-                if conversor(conjunto[linha].getFifo(), 'bpd') == maiorFifo:
-                    linha.setBloco(memoria[bloco].getBloco())
-                    linha.setRotulo(memoria[bloco].getRotulo())
+                if conversor(linha.getFifo(), 'bpd') == maiorFifo:
+                    linha.setBloco(bloco.getBloco())
+                    linha.setRotulo(bloco.getRotulo())
                     linha.setValido()
                     break
             break
