@@ -182,16 +182,41 @@ def encheMemoria(memoria):
 # 4 linhas dentro do conjunto
 # 1 bloco dentro da linha
 # 4 celulas dentro do bloco
-def buscaEnderecoCache(cache, memoria, endereco):
-    for conjunto in cache:
-        for linha in conjunto.getConjunto():
-            for bloco in linha.getBloco():
-                for i, celula in enumerate(bloco.getCelula()):
-                    if celula.getLinha() == endereco[0:5]:
-                        print("Esta na cache \n Linha da Cache: {}, Endereço: {}, Dado: {}".format(i, linha.getRotulo(),celula.getLinha(), celula.getDado()))
-                    else:
-                        colocaNaCache(cache, memoria, endereco)        
-        
+def buscaEnderecoCache(cache, memoria):
+    print("Digite um endereço em decimal no intervalo de 0 a 128")
+    endereco = int(input())
+    if endereco < 128 or endereco > 0:
+        endereco = conversor(endereco,'dpb')
+        endereco = completaEndereco(endereco)
+        print(endereco)
+        for conjunto in cache:
+            for i, linha in enumerate(conjunto.getConjunto()):
+                if linha.getRotulo() == endereco[0:5]:
+                    bloco = linha.getBloco()
+                    celula = bloco.getCelula()
+                    print("Esta na cache \n Linha da Cache: {}, Endereço: {}, Dado: {}".format(i, linha.getRotulo(),celula.getLinha(), celula.getDado()))
+                    break
+            else:
+                print("Não foi encontrado na cache")
+                print("\n")
+                print("Procurando na memória")
+                buscaMemoria(memoria, endereco)
+                colocaNaCache(cache, memoria, endereco)  
+                          
+def completaEndereco(endereco):
+    if len(endereco) != 7:
+       sub = 7 - len(endereco)
+       add = "".join(['0' for i in range(sub)])
+       endereco = add + endereco
+    return endereco
+
+
+def buscaMemoria(memoria, endereco):
+    for bloco in memoria:
+        if bloco.getRotulo() == endereco[0:5]:
+            print("Encontrado na cache: endereço {} bloco {}".format(endereco, bloco.getRotulo()))
+        break
+
     # cojunto = getConjunto()
     # linhaDaCache = cojunto[0].getLinha()
     # bloco = linhaDaCache[0].getBloco()
@@ -208,9 +233,9 @@ def conversor(numero, modo):
 
 def colocaNaCache(cache, memoria, endereco):
     for bloco in memoria:
-        if memoria[bloco].getRotulo() == rotulo:
+        if memoria[bloco].getRotulo() == endereco:
             conjunto = []
-            if rotulo[-2] == '0':
+            if endereco[-2] == '0':
                 conjunto = cache[0].getConjunto()
                 incrementaFifo(cache, 0)
             else:
@@ -262,9 +287,10 @@ def printBloco(bloco):
 
 memoria = []
 cache = []
-memoria = encheMemoria(memoria)
-#printMemoria(memoria)
+#memoria = encheMemoria(memoria)
+printMemoria(memoria)
 cache = insereCache(cache)
+buscaEnderecoCache(cache, memoria)
 printCache(cache)
 
 # while(True):
