@@ -182,27 +182,31 @@ def encheMemoria(memoria):
 # 4 linhas dentro do conjunto
 # 1 bloco dentro da linha
 # 4 celulas dentro do bloco
+    
 def buscaEnderecoCache(cache, memoria):
-    print("Digite um endereço em decimal no intervalo de 0 a 128")
-    endereco = int(input())
+    retorno = False
+    endereco = int(input("Digite um endereço em decimal no intervalo de 0 a 128 " ))
     if endereco < 128 or endereco > 0:
         endereco = conversor(endereco,'dpb')
         endereco = completaEndereco(endereco)
-        buscaMemoria(memoria, endereco)
         #print(endereco)
-        for conjunto in cache:
-            for i, linha in enumerate(conjunto.getConjunto()):
-                if linha.getRotulo() == endereco[0:5]:
-                    bloco = linha.getBloco()
-                    #celula = bloco.getCelula()
-                    #print("Esta na cache \n Linha da Cache: {}, Endereço: {}, Dado: {}".format(i, linha.getRotulo(),celula.getLinha(), celula.getDado()))
-                    break
-                else:
-                    print("Não foi encontrado na cache")
-                    print("\n")
-                    print("Procurando na memória")
-                    buscaMemoria(memoria, endereco)
-                    colocaNaCache(cache, memoria, endereco)  
+    for conjunto in cache:
+        for i, linha in enumerate(conjunto.getConjunto()):
+            if linha.getRotulo() == endereco[0:5]:
+                bloco = linha.getBloco()
+                #print("Bloco", bloco)
+                #celula = bloco.getCelula()
+                retorno = True
+                print("Esta na cache \n Linha da Cache: {}, Endereço: {}".format(i, linha.getRotulo()))
+                break
+   
+    if not retorno:
+        print("Não foi encontrado na cache")
+        print("\n")
+        print("Procurando na memória")
+        buscaMemoria(memoria, endereco)
+        colocaNaCache(cache, memoria, endereco)
+              
                           
 def completaEndereco(endereco):
     if len(endereco) != 7:
@@ -211,12 +215,20 @@ def completaEndereco(endereco):
        endereco = add + endereco
     return endereco
 
+def completaValor(valor):
+    if len(valor) != 8:
+       sub = 8 - len(valor)
+       add = "".join(['0' for i in range(sub)])
+       valor = add + valor
+    return valor
+
+
 
 def buscaMemoria(memoria, endereco):
     for bloco in memoria:
         if bloco.getRotulo() == endereco[0:5]:
             print("Encontrado na cache: endereço {} bloco {}".format(endereco, bloco.getRotulo()))
-        break
+            break
     return bloco
 
     # cojunto = getConjunto()
@@ -234,6 +246,7 @@ def conversor(numero, modo):
     return numero
 
 def colocaNaCache(cache, memoria, endereco):
+    print('Entrou na coloca')
     for bloco in memoria:
         if memoria[bloco].getRotulo() == endereco:
             conjunto = []
@@ -255,22 +268,57 @@ def colocaNaCache(cache, memoria, endereco):
                             memoria[blocoMemo].setBloco(blocoCache.getCelula())
                             break
                     break
-            for linha in conjunto: # coloca na cache no luga do fifo mais alto
+            for linha in conjunto: # coloca na cache no lugar do fifo mais alto
                 if conversor(conjunto[linha].getFifo(), 'bpd') == maiorFifo:
                     conjunto[linha].setBloco(memoria[bloco].getBloco())
                     break
             break
             
-def escreveNaCache(cache, endereco):
-    pass
+def escreve(cache, memoria):
+    # print()
+    endereco = int(input("Digite um endereço em decimal no intervalo de 0 a 128 "))
+    if endereco < 128 or endereco > 0:
+        endereco = conversor(endereco,'dpb')
+        endereco = completaEndereco(endereco)
+    # print()
+    valor  = int(input("Digite o valor em decimal no intervalo de 0 a 256 "))
+    if valor < 128 or valor > 0:
+        valor = conversor(valor,'dpb')
+        valor = completaValor(valor)
+    
+    if endereco[-2] == '0':
+        conjunto = cache[0]
+    else:
+        conjunto = cache[1]
 
+    restart = True
+    while restart:
+        cont = 0
+        for linha in conjunto.getConjunto():
+            if linha.getRotulo == endereco[0:5]:
+                bloco = linha.getBloco()
+                celulas = bloco.getCelula()
+                for celula in celulas:
+                    if endereco == celula.getLinha():
+                        celula.setDado(valor)
+                        break
+                restart = False
+                break
+            elif cont != 4:
+                cont+=1
+                continue
+            else:
+                colocaNaCache(cache, memoria, endereco)
+                break
+    
+####### print memoria
 def printMemoria(memoria):
     for bloco in memoria:
         print("Bloco", bloco.getRotulo())
         for celula in bloco.getCelula():
             print("Linha {} - Dado: {}".format(celula.getLinha(), celula.getDado()))
         print("\n")
-
+####### print cache
 def printCache(cache):
     conjunto_ = 0
     for conjunto in cache:
@@ -282,27 +330,26 @@ def printCache(cache):
                     print("Linha: {} - Dado: {}".format(celula.getLinha(), celula.getDado()))
         conjunto_+=1
 
-def printBloco(bloco):
-    for celula in bloco.getCelula():
-        print("Linha: {} - Dado: {}".format(celula.getLinha(), celula.getDado()))
+# def printBloco(bloco):
+#     for celula in bloco.getCelula():
+#         print("Linha: {} - Dado: {}".format(celula.getLinha(), celula.getDado()))
 
 
 memoria = []
 cache = []
 memoria = encheMemoria(memoria)
 cache = insereCache(cache)
-#buscaEnderecoCache(cache, memoria)
-printMemoria(memoria)
 
-#printCache(cache)
-
-# while(True):
-#     op = int(input('Escolha a opção do que deseja fazer:\n0 - Ler conteúdo de determinado endereço de memória\n1 - Escrever em determinado endereço de memória\n2 - Mostrar estatísticas\n3 - Sair\n$ '))
-#     if op == 1:
-#         ender = str(input('Digite o endereço que deseja buscar: '))
-#         buscaEnderecoCache(cache, ender)
-#     elif op == 2:
-#         escr = str(input('Digite o endereço a ser escrito: '))
-#         # escreve na cache
-#     else:
-#         break
+while(True):
+    op = int(input('Escolha a opção do que deseja fazer:\n1 - Ler conteúdo de determinado endereço de memória\n2 - Escrever em determinado endereço de memória\n3 - Mostrar Memória Cache\n4 - Mostrar Memória Principal\n5 - Sair\n$ '))
+    if op == 1:
+        buscaEnderecoCache(cache, memoria)
+    elif op == 2:
+        escreve(cache, memoria)
+        # escreve na cache
+    elif op == 3:
+        printCache(cache)
+    elif op == 4:
+        printMemoria(memoria)
+    else:
+        break
