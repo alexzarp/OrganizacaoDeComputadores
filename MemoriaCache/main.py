@@ -279,6 +279,7 @@ def colocaNaCache(cache, memoria, endereco):
                     linha.setValido()
                     break
             break
+    printCache(cache)
             
 def escreve(cache, memoria):
     # print()
@@ -292,17 +293,17 @@ def escreve(cache, memoria):
         valor = conversor(valor,'dpb')
         valor = completaValor(valor)
     
-    if endereco[-2] == '0':
+    if endereco[-2] == '1':
         conjunto = cache[0]
     else:
         conjunto = cache[1]
 
     restart = True
     while restart:
-        cont = 0
+        cont = 1
         # print('ab')
         for linha in conjunto.getConjunto():
-            print(linha.getRotulo(), endereco[0:5])
+            #print(linha.getRotulo(), endereco[0:5])
             if linha.getRotulo() == endereco[0:5] and linha.getValido() == '1':
                 bloco = linha.getBloco()
                 # print(bloco.getRotulo())
@@ -319,7 +320,7 @@ def escreve(cache, memoria):
                 continue
             else:
                 print('teste')
-                colocaNaCache(cache, memoria, endereco)
+                #colocaNaCache(cache, memoria, endereco)
                 break
         
     
