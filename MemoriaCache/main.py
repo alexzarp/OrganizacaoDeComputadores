@@ -1,5 +1,11 @@
 import random as rd
-# from random import randrange
+#Alunos: Bruna Disner - 1911100007
+#Alex Sandro Zarpelon - 1911100039
+# O programa funciona algumas funções, não conseguimos implementar para escrever na memória cache
+# Implementamos a politica solicitada porém a execução não acontece como gostaríamos
+# a função de buscar memória e cache funcionam
+# a função de escrever e substituir não funcionam
+# por conta do tempo não conseguimos terminar
 
 class CelulaMemoria(object):
     def __init__(self): # construtor 
@@ -143,10 +149,7 @@ def incrementaFifo(cache, conjuntoDestino):
     conjunto = cache[conjuntoDestino].getConjunto()
     for linha_cache in range(len(conjunto)):
         conjunto[linha_cache].incrementaFifo()
-# 2 conjuntos
-# 4 linhas dentro do conjunto
-# 1 bloco dentro da linha
-# 4 celulas dentro do bloco
+
 def insereCache(cache):
     for conjunto_cache in range(2):
         conjunto = ConjuntoCache()
@@ -180,11 +183,6 @@ def encheMemoria(memoria):
         memoria.append(bloco)
 
     return memoria
-
-# 2 conjuntos
-# 4 linhas dentro do conjunto
-# 1 bloco dentro da linha
-# 4 celulas dentro do bloco
     
 def buscaEnderecoCache(cache, memoria):
     retorno = False
@@ -208,7 +206,8 @@ def buscaEnderecoCache(cache, memoria):
         print("Não foi encontrado na cache")
         print("\n")
         print("Procurando na memória")
-        buscaMemoria(memoria, endereco)
+        bloco = buscaMemoria(memoria, endereco)
+        #escreveCache(cache,bloco)
         colocaNaCache(cache, memoria, endereco)
               
                           
@@ -231,7 +230,7 @@ def completaValor(valor):
 def buscaMemoria(memoria, endereco):
     for bloco in memoria:
         if bloco.getRotulo() == endereco[0:5]:
-            print("Encontrado na cache: endereço {} bloco {}".format(endereco, bloco.getRotulo()))
+            print("Encontrado na memoria: endereço {} bloco {}".format(endereco, bloco.getRotulo()))
             break
     return bloco
 
@@ -280,7 +279,17 @@ def colocaNaCache(cache, memoria, endereco):
                     break
             break
     printCache(cache)
-            
+
+# def escreveCache(cache, bloco):
+#     for conjunto in cache:
+#         for linha in conjunto.getConjunto():
+#             if linha.getRotulo() == '00000' and linha.getValido() == str(0):
+#                 linha.setRotulo(bloco.getRotulo)
+#                 linha.setValido(str(1))
+#                 linha.setBloco(bloco)
+#                 print("Gravou na cache") 
+#                 break           
+
 def escreve(cache, memoria):
     # print()
     endereco = int(input("Digite um endereço em decimal no intervalo de 0 a 128: "))
