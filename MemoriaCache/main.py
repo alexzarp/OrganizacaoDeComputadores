@@ -234,10 +234,6 @@ def buscaMemoria(memoria, endereco):
             break
     return bloco
 
-    # cojunto = getConjunto()
-    # linhaDaCache = cojunto[0].getLinha()
-    # bloco = linhaDaCache[0].getBloco()
-    # celula = bloco[0].getCelula()
 
 def conversor(numero, modo):
     if modo == 'bpd':
@@ -351,10 +347,6 @@ def printCache(cache):
                 for celula in bloco.getCelula():
                     print("Linha: {} - Dado: {}".format(celula.getLinha(), celula.getDado()))
         conjunto_+=1
-
-# def printBloco(bloco):
-#     for celula in bloco.getCelula():
-#         print("Linha: {} - Dado: {}".format(celula.getLinha(), celula.getDado()))
 
 
 memoria = []
